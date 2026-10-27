@@ -168,3 +168,31 @@ function mfSubmit(e){
  state.method[type].push(x);state.method.committedAt='';save();renderDashboard();toast('Opgeslagen');return true;
 }
 mfEnsure();
+
+const MF_PHASES={
+ prep:['overview','readiness','capacity','arts','rooms','tasks','speakers','people','catering','invites','checklist'],
+ run:['agenda','objectives','board','risks','confidence','audit','checkin'],
+ close:['results','feedback']
+};
+const MF_PHASE_TIPS={
+ prep:'Controleer je ARTs, doelen, mensen, beschikbare capaciteit en praktische organisatie.',
+ run:'Plan features, leg doelstellingen, risico’s, besluiten en confidence vast.',
+ close:'Controleer de PI-resultaten, evalueer en exporteer het draaiboek.'
+};
+function mfSyncPhase(current){
+ const phase=Object.keys(MF_PHASES).find(k=>MF_PHASES[k].includes(current))||'prep';
+ document.querySelectorAll('#phaseNav [data-phase]').forEach(b=>b.classList.toggle('active',b.dataset.phase===phase));
+ const tip=document.getElementById('phaseHint');if(tip)tip.textContent=MF_PHASE_TIPS[phase];
+ document.querySelectorAll('#tabs button[data-tab]').forEach(b=>{
+  b.style.display=MF_PHASES[phase].includes(b.dataset.tab)?'':'none';
+ });
+}
+const mfNav=document.getElementById('phaseNav');
+if(mfNav)mfNav.addEventListener('click',e=>{
+ const b=e.target.closest('button[data-phase]');if(!b)return;
+ const group=b.dataset.phase,first=MF_PHASES[group]?.[0];
+ if(!first)return;
+ tab=first;editing=null;renderDashboard();
+ document.getElementById('tabs')?.scrollIntoView({behavior:'smooth',block:'start'});
+});
+if(state.ready)renderDashboard();
