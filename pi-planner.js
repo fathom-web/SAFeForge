@@ -331,7 +331,7 @@ function icsEvents(agenda=false){
  const now=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d+Z$/,'Z');
  const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//NOVYX FORGE//PI Event Planner//NL','CALSCALE:GREGORIAN','METHOD:PUBLISH'];
  const events=agenda?state.agenda: [{id:'day1',day:0,start:'09:00',end:'17:00',title:state.eventName+' – dag 1'},{id:'day2',day:1,start:'09:00',end:'17:00',title:state.eventName+' – dag 2'}];
- for(const a of events){const day=state.days[a.day];if(!day)continue;lines.push('BEGIN:VEVENT','UID:'+a.id+'-'+day+'@safe-agile-forge.local','DTSTAMP:'+now,'DTSTART:'+stamp(day,a.start),'DTEND:'+stamp(day,a.end),'SUMMARY:'+compactICS(a.title),'LOCATION:'+compactICS(state.venue+' '+state.address),'DESCRIPTION:'+compactICS('PI: '+state.piName+'\nOrganisatie: '+state.organizer+'\n'+(a.owner||'')+'\nControleer deze afspraak en verstuur je uitnodigingen zelf.'),'END:VEVENT')}
+ for(const a of events){const day=state.days[a.day];if(!day)continue;lines.push('BEGIN:VEVENT','UID:'+a.id+'-'+(state.piName||'PI').replace(/[^a-z0-9-]/gi,'-')+'@safe-agile-forge.local','DTSTAMP:'+now,'DTSTART:'+stamp(day,a.start),'DTEND:'+stamp(day,a.end),'SUMMARY:'+compactICS(a.title),'LOCATION:'+compactICS(state.venue+' '+state.address),'DESCRIPTION:'+compactICS('PI: '+state.piName+'\nOrganisatie: '+state.organizer+'\n'+(a.owner||'')+'\nControleer deze afspraak en verstuur je uitnodigingen zelf.'),'END:VEVENT')}
  lines.push('END:VCALENDAR');
  return lines.map(foldICS).join('\r\n')+'\r\n';
 }
