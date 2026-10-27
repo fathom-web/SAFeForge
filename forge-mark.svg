@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title">
+<title id="title">SAFe Agile Forge symbool</title>
+<defs>
+<linearGradient id="a" x1="5%" y1="0%" x2="90%" y2="100%">
+<stop stop-color="#162a48"/><stop offset=".5" stop-color="#173f55"/><stop offset="1" stop-color="#153b4c"/>
+</linearGradient>
+<linearGradient id="b" x1="0" x2="1" y1=".7" y2=".2"><stop stop-color="#8bffdf"/><stop offset=".47" stop-color="#67d3e2"/><stop offset="1" stop-color="#a4b2ff"/></linearGradient>
+<linearGradient id="c" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#b3fff0"/><stop offset="1" stop-color="#75dce9"/></linearGradient>
+</defs>
+<path d="M64 6 114 34v60L64 122 14 94V34z" fill="url(#a)" stroke="#7adecf" stroke-width="3" stroke-linejoin="round"/>
+<path d="M64 17 104 40v48L64 111 24 88V40z" fill="none" stroke="#ffffff" stroke-opacity=".17" stroke-width="1.4"/>
+<path d="M39 37h50L78 51H55v12h27L71 77H55v19H39z" fill="url(#b)"/>
+<path d="M38 34h13v6H38z" fill="#ecfff6" opacity=".78"/>
+<circle cx="89" cy="37" r="4.5" fill="#b4f9e9"/>
+<path d="M81 37h-8m16 9v13h-7" fill="none" stroke="url(#c)" stroke-width="2.6" stroke-linecap="round" opacity=".83"/>
+<circle cx="82" cy="63" r="3.4" fill="#b6a7ff"/>
+<path d="M75 86h17M91 86v10" stroke="#a5f7e4" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".7"/>
+<circle cx="91" cy="99" r="4" fill="#9be9da"/>
+<path d="m21 56 10-6m-10 27 10 6m76-27-10-6m10 27-10 6" stroke="#9ffff1" stroke-opacity=".25" stroke-width="2"/>
+</svg>
