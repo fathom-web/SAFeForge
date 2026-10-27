@@ -690,7 +690,7 @@ $('exportIcs').addEventListener('click',()=>{const errs=validate();const results
 renderAll();
 document.querySelectorAll('[data-target-group]').forEach(el=>el.addEventListener('click',()=>{ const group=el.dataset.targetGroup; if(state.showRelevantOnly){state.showRelevantOnly=false;renderRoles();renderLibrary()} if($('search').value){$('search').value='';renderLibrary()} const h=[...document.querySelectorAll('.group-title')].find(e=>e.textContent.includes(group)); if(h)h.scrollIntoView({behavior:'smooth',block:'center'}); else $('ceremonyPanel').scrollIntoView({behavior:'smooth',block:'start'}); }));
 </script>
-<script src="./pi-planner-export.js?v=20261028-safev4"></script>
-<script src="./ceremony-features.js?v=20261028-safev4"></script>
-<script src="./safe-help.js?v=20261028"></script>
+<script src="./pi-planner-export.js?v=20261028-release4"></script>
+<script src="./ceremony-features.js?v=20261028-release4"></script>
+<script src="./safe-help.js?v=20261028-release4"></script>
 </body></html>
