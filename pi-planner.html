@@ -26,6 +26,30 @@
 @media(max-width:900px){.layout{grid-template-columns:1fr}.aside{position:static}.metrics{grid-template-columns:repeat(3,minmax(0,1fr))}.halo{display:none}.hero{padding:28px 0 23px}}
 @media(max-width:600px){.wrap{width:calc(100% - 24px)}header{padding:14px 0}.brand{font-size:14px;gap:8px}.brand img{width:39px;height:39px}.head-chip{display:none}.hero p{font-size:13px}.hero h1{font-size:35px}.panel{padding:16px;border-radius:15px}.stepheads{gap:2px}.stephead{font-size:10px;padding:7px 5px}.stephead b{font-size:12px}.formgrid,.formgrid.three,.team-edit-list{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.metric{padding:11px}.metric b{font-size:23px}.tabs button{padding:10px 11px}.agendarow{grid-template-columns:70px minmax(0,1fr);padding:11px 12px;gap:7px}.agendarow .mini-actions{grid-column:2;justify-self:start}.agendarow .time{font-size:11px}.mealstats{grid-template-columns:1fr}.dashboard .dash-head h2{font-size:24px}.actions{align-items:stretch}.actions .right{width:100%}.actions .right .btn{flex:1}}
 @media print{body{background:#fff}.topline,header,.hero,.tabs,.btn,.actions,#toast,.dash-head .buttonline,.entry,.aside,.smallprint{display:none!important}.wrap{width:100%;margin:0}.panel{border:none;box-shadow:none;padding:0}.dashboard{display:block!important}.wizard{display:none!important}.printhead{display:block}.layout{display:block}table{min-width:0;font-size:10px}.agendarow .mini-actions{display:none}.agendarow{break-inside:avoid}.agenda-day{break-inside:avoid}.metrics{display:none}.tabs-content>div{display:none}.tabs-content #overviewView,.tabs-content #agendaView{display:block!important}}
+
+/* PI Event Command Center operational modules */
+.operational-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:15px 0 22px}
+.operational-card{padding:15px;border:1px solid #d8e9df;border-radius:13px;background:#f4faf7}
+.operational-card b{display:block;color:#147b6e;font-size:25px;line-height:1.2}
+.operational-card small{color:#648780;font-size:11px}
+.traffic{display:inline-block;border-radius:30px;font-size:10px;font-weight:850;padding:5px 9px}
+.traffic.red{background:#fff0ed;color:#b64b40}.traffic.green{background:#e6f7ee;color:#177952}
+.traffic.amber{background:#fff4df;color:#8a5d1c}.traffic.grey{background:#e9f3ef;color:#637f76}
+.task-list{display:grid;gap:11px}.task-card{background:#f9fcfa;border:1px solid #dbeae2;border-radius:13px;padding:15px}
+.task-header{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap}.task-header strong{font-size:14px}
+.task-details{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-top:12px}
+.task-details .field span{font-size:11px}.task-form{margin-top:20px}
+.audit-good{background:#ebf8f0;color:#137451;border:1px solid #c7e6d2;padding:14px;border-radius:12px}
+.audit-issue{display:flex;align-items:flex-start;gap:11px;border:1px solid #e8d9b9;background:#fffaf0;border-radius:13px;padding:14px;margin:9px 0}
+.audit-issue.critical{border-color:#ecb6a9;background:#fff4f0}
+.audit-issue strong{display:block}.audit-issue p{font-size:12px;color:#617974;margin:5px 0}
+.checkin-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;border-bottom:1px solid #e2eee7;padding:12px 15px}
+.checkin-row strong{display:block}.checkin-row small{display:block;color:#6d8a82}
+.checkin-action.active{background:#168e78;color:#fff;border-color:#168e78}
+.feedback-card,.art-overview-row{border:1px solid #d8e7df;background:#f7fbf8;border-radius:13px;padding:16px;margin:10px 0}
+.feedback-card p{color:#62817b;font-size:12px}
+@media(max-width:800px){.task-details{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.operational-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.operational-card{padding:11px}.operational-card b{font-size:23px}.task-details{grid-template-columns:1fr}.audit-issue{padding:11px}.checkin-row{padding:10px}.dash-head .buttonline{justify-content:flex-start}}
 </style>
 </head>
 <body>
