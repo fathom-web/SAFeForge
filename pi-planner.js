@@ -118,14 +118,14 @@ function mealOptions(v){return [['regular','Standaard'],['veggie','Vegetarisch']
 function statusOptions(v){return [['invited','Uitgenodigd'],['yes','Aanwezig'],['maybe','Misschien'],['no','Afwezig']].map(a=>option(v,a[0],a[1])).join('')}
 function statusName(v){return {invited:'Uitgenodigd',yes:'Aanwezig',maybe:'Misschien',no:'Afwezig'}[v]||'Uitgenodigd'}
 function counts(){const scale=scaleCounts();return {...scale,registrations:state.people.length,yes:state.people.filter(p=>p.status==='yes').length,maybe:state.people.filter(p=>p.status==='maybe').length,pending:state.people.filter(p=>p.status==='invited').length,done:state.checks.filter(c=>c.done).length}}
-function renderDashboard(){
+function renderDashboard(){if(typeof ensureOperations==='function')ensureOperations();
  $('wizard').classList.add('off');$('dashboard').classList.add('on');
  const c=counts();
  $('dashboardTitle').textContent=state.eventName||'PI Planning';
  $('eventSubheading').textContent=(state.piName||'PI')+' · '+when(state.days[0])+' & '+when(state.days[1]);
  $('metrics').innerHTML=[['ARTs',c.arts],['Teams',c.teams],['Verwacht',c.people],['Aangemeld',c.yes],['Checks gereed',c.done+'/'+state.checks.length]].map(a=>'<div class="metric"><b>'+a[1]+'</b><small>'+a[0]+'</small></div>').join('');
  document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
- $('view').innerHTML=tab==='overview'?viewOverview():tab==='agenda'?viewAgenda():tab==='rooms'?viewRooms():tab==='people'?viewPeople():tab==='catering'?viewCatering():tab==='invites'?viewInvites():viewChecklist();
+ $('view').innerHTML=tab==='overview'?viewOverview():tab==='agenda'?viewAgenda():tab==='rooms'?viewRooms():tab==='arts'?viewARTs():tab==='tasks'?viewTasks():tab==='speakers'?viewSpeakers():tab==='audit'?viewAudit():tab==='checkin'?viewCheckin():tab==='feedback'?viewFeedback():tab==='people'?viewPeople():tab==='catering'?viewCatering():tab==='invites'?viewInvites():viewChecklist();
 }
 function paneHead(kicker,title,desc){return '<div class="kicker">'+kicker+'</div><h2>'+title+'</h2><p class="sub">'+desc+'</p>'}
 function viewOverview(){
@@ -278,7 +278,7 @@ function icsEvents(agenda=false){
 }
 function foldICS(line){let buf='',n=0,out=[];for(const ch of line){const bytes=new TextEncoder().encode(ch).length;if(n+bytes>74){out.push(buf);buf=' '+ch;n=bytes+1}else{buf+=ch;n+=bytes}}out.push(buf);return out.join('\r\n')}
 function copyInvite(){const t=invitationText();if(navigator.clipboard?.writeText)navigator.clipboard.writeText(t).then(()=>toast('Uitnodiging gekopieerd.')).catch(()=>window.prompt('Kopieer de uitnodiging:',t));else window.prompt('Kopieer de uitnodiging:',t)}
-function dispatchAction(name){
+function dispatchAction(name){if(typeof operationalAction==='function'&&operationalAction(name))return;
  if(name==='jsonExport')return saveJSON();
  if(name==='jsonImport'){return $('fileJSON').click()}
  if(name==='csvTemplate')return exportCSV(true);
@@ -289,7 +289,7 @@ function dispatchAction(name){
  if(name==='eventICS'){return download('pi-planning-event.ics',icsEvents(),'text/calendar;charset=utf-8')}
  if(name==='agendaICS'){return download('pi-planning-draaiboek.ics',icsEvents(true),'text/calendar;charset=utf-8')}
  if(name==='mailto'){const sub=encodeURIComponent('Uitnodiging '+state.piName+' PI Planning'),body=encodeURIComponent(invitationText());return window.location.href='mailto:?subject='+sub+'&body='+body}
- if(name==='print'){tab='agenda';renderDashboard();return window.print()}
+ if(name==='print'){return typeof exportEventPDF==='function'?exportEventPDF():window.print()}
  if(name==='addAgenda'){editing='new';tab='agenda';renderDashboard();return $('agendaForm')?.scrollIntoView({behavior:'smooth',block:'center'})}
  if(name==='cancelAgenda'){editing=null;renderDashboard();return}
  if(name==='saveAgenda'){
@@ -301,7 +301,7 @@ function dispatchAction(name){
   editing=null;save();renderDashboard();return toast('Programma bijgewerkt.');
  }
 }
-function onViewClick(e){
+function onViewClick(e){if(typeof operationalClick==='function'&&operationalClick(e))return;
  const el=e.target.closest('button');if(!el)return;
  if(el.dataset.tab){tab=el.dataset.tab;editing=null;renderDashboard();return}
  if(el.dataset.action){dispatchAction(el.dataset.action);return}
@@ -310,7 +310,7 @@ function onViewClick(e){
  if(el.dataset.personDelete!==undefined){const i=+el.dataset.personDelete;if(confirm('Deelnemer '+state.people[i]?.name+' verwijderen?')){state.people.splice(i,1);save();renderDashboard()}return}
  if(el.dataset.removeCheck!==undefined){state.checks.splice(+el.dataset.removeCheck,1);save();renderDashboard()}
 }
-function onViewChange(e){
+function onViewChange(e){if(typeof operationalChange==='function'&&operationalChange(e))return;
  const el=e.target;
  function set(key,index,property){if(state.people[index]){state.people[index][key]=property;save();renderDashboard()}}
  if(el.dataset.teamRoom!==undefined||el.dataset.teamSm!==undefined||el.dataset.teamPo!==undefined){
@@ -327,7 +327,7 @@ function onViewChange(e){
  if(el.dataset.mealNote!==undefined){const i=+el.dataset.mealNote;if(state.people[i]){state.people[i].mealNote=el.value;save()}return}
  if(el.dataset.checkIndex!==undefined){const x=state.checks[+el.dataset.checkIndex];if(x){x.done=el.checked;save();renderDashboard()}return}
 }
-function onViewSubmit(e){
+function onViewSubmit(e){if(typeof operationalSubmit==='function'&&operationalSubmit(e))return;
  if(e.target.id==='newPerson'){e.preventDefault();const d=new FormData(e.target),name=String(d.get('name')||'').trim();if(!name)return;state.people.push({id:uid(),name,email:String(d.get('email')||'').trim(),role:String(d.get('role')||'').trim(),artId:'',teamId:'',status:'invited',days:[true,true],meals:['regular','regular'],mealNote:''});save();renderDashboard();toast('Deelnemer toegevoegd.');return}
  if(e.target.id==='newCheck'){e.preventDefault();const d=new FormData(e.target),name=String(d.get('name')||'').trim();if(!name)return;state.checks.push({id:uid(),name,done:false});save();renderDashboard();return}
 }
