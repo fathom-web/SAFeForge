@@ -235,7 +235,7 @@ function csv(rows){return '\uFEFF'+rows.map(r=>r.map(csvEncode).join(';')).join(
 function download(name,body,type){const blob=new Blob([body],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),5000)}
 function exportCSV(template=false){
  const rows=[['naam','email','rol','art','team','rsvp','dag1','dag2','lunch1','lunch2']];
- if(template)rows.push(['Voorbeeld Persoon','voorbeeld@organisatie.nl','PO',state.arts[0]?.name||'ART 1',state.arts[0]?.teams[0]?.name||'Team 1','invited','ja','ja','standard','veggie']);
+ if(template)rows.push(['Voorbeeld Persoon','voorbeeld@organisatie.nl','PO',state.arts[0]?.name||'ART 1',state.arts[0]?.teams[0]?.name||'Team 1','invited','ja','ja','regular','veggie']);
  else for(const p of state.people){const art=state.arts.find(a=>a.id===p.artId),team=art?.teams.find(t=>t.id===p.teamId);rows.push([p.name,p.email||'',p.role||'',art?.name||'',team?.name||'',p.status,p.days[0]?'ja':'nee',p.days[1]?'ja':'nee',p.meals[0],p.meals[1]])}
  download(template?'pi-planner-deelnemers-sjabloon.csv':'pi-planner-deelnemers.csv',csv(rows),'text/csv;charset=utf-8');
 }
