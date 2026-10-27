@@ -271,6 +271,18 @@ html{scroll-padding-top:30px}body{background:#f4f7f6;color:var(--text);font-fami
  .landing-mode .forge-intro .hero-lead{font-size:13px}
  .planner-mode .change-role-btn{font-size:10px;padding:8px 10px;margin-left:auto}
 }
+
+/* Landing date picker and schedule primer */
+.landing-mode .forge-intro .landing-date{display:grid;gap:7px;margin:22px auto 0;max-width:500px;text-align:left}
+.landing-date label{color:#e5fff8;font-weight:800;font-size:13px;letter-spacing:.01em}
+.landing-date input{display:block;width:100%;max-width:100%;box-sizing:border-box;min-width:0;padding:13px 16px;font:inherit;font-size:16px;color:#163d40;background:#f3fffc;border:2px solid #a8e6d9;border-radius:12px;color-scheme:light}
+.landing-date input:focus{outline:3px solid #88e4d081;outline-offset:2px}
+.landing-date p{color:#b9d5d7!important;line-height:1.55!important;font-size:12px!important;margin:4px 0 0!important;max-width:none!important;text-align:left!important}
+.landing-error{font-size:12px;color:#ffdba4;min-height:0;font-weight:800}
+.landing-mode .forge-intro .rolebar{margin-top:20px}
+.landing-mode .forge-intro{min-height:calc(100svh - 155px)}
+.planner-mode .landing-date{display:none}
+@media(max-width:650px){.landing-mode .forge-intro .landing-date{margin-top:18px}.landing-date input{height:50px}.landing-date p{font-size:11px!important}}
 </style>
 </head>
 <body class="landing-mode">
@@ -300,7 +312,7 @@ html{scroll-padding-top:30px}body{background:#f4f7f6;color:var(--text);font-fami
     <div class="intro-actions"><span class="hero-privacy"><span aria-hidden="true">◈</span> Geen account · Geen koppeling met Outlook of Defensie</span></div>
   <section class="role-gateway" id="roleGateway" aria-labelledby="roleQuestion">
   <div class="step-heading"><span class="step-kicker">01 / GET STARTED</span><div><h2 id="roleQuestion">Welke rol heb jij binnen jouw ART?</h2><p>Selecteer jouw rol. We vinken de relevante ceremonies alvast aan; je kunt ze daarna vrij aanpassen.</p></div></div>
-  <div class="rolebar" id="rolebar">
+  <div class="landing-date"><label for="landingStart">Startdatum van iteratie 1</label><input id="landingStart" type="date" required><p>Forge stelt automatisch vier iteraties van 2 weken en een IP Iteration van 2 weken voor. Dit is een aanpasbaar uitgangspunt voor jouw ART, geen verplichte SAFe-indeling.</p><span id="landingError" class="landing-error" role="status" aria-live="polite"></span></div><div class="rolebar" id="rolebar">
     <button class="role" data-role="RTE" type="button"><span class="role-glyph">↗</span><strong>RTE</strong><small>Release Train Engineer</small><span class="role-cta">Kies rol <span aria-hidden="true">→</span></span></button>
     <button class="role" data-role="PM" type="button"><span class="role-glyph">◇</span><strong>PM</strong><small>Product Manager</small><span class="role-cta">Kies rol <span aria-hidden="true">→</span></span></button>
     <button class="role" data-role="PO" type="button"><span class="role-glyph">◎</span><strong>PO</strong><small>Product Owner</small><span class="role-cta">Kies rol <span aria-hidden="true">→</span></span></button>
@@ -417,6 +429,18 @@ function shiftLaterIterations(idx){
     it.end=addDays(it.start,days-1);
     end=it.end;
   }
+}
+function seedIterationsFromStart(firstStart){
+  if(!fromISO(firstStart))return false;
+  let cursor=firstStart;
+  for(const iteration of state.iterations){
+    const length=14;
+    iteration.start=cursor;
+    iteration.end=addDays(cursor,length-1);
+    cursor=addDays(iteration.end,1);
+  }
+  state.autoCascade=true;
+  return true;
 }
 function updateIterationDate(id,field,value){
   const idx=state.iterations.findIndex(it=>it.id===id);
@@ -553,9 +577,19 @@ $('autoCascade').addEventListener('change',e=>{
   renderAll();toast(state.autoCascade?'Iteraties worden automatisch doorgerekend.':'Automatisch doortellen uitgeschakeld.');
 });
 $('piName').addEventListener('input',e=>{state.piName=e.target.value;saveState();refresh()});for(const id of ['currentPiPlanning','nextPiPlanning'])$(id).addEventListener('change',e=>{state[id]=e.target.value;saveState();refresh()});
-function enterPlanner(role){state.role=role;presetPick();renderAll();document.body.classList.remove('landing-mode');document.body.classList.add('planner-mode');window.scrollTo({top:0,behavior:'instant'});}
+function enterPlanner(role){
+ const date=$('landingStart').value;
+ if(!fromISO(date)){$('landingError').textContent='Kies eerst de startdatum van iteratie 1.';$('landingStart').focus();return}
+ $('landingError').textContent='';
+ if(state.iterations[0]?.start!==date)seedIterationsFromStart(date);
+ state.role=role;presetPick();renderAll();
+ document.body.classList.remove('landing-mode');document.body.classList.add('planner-mode');
+ window.scrollTo({top:0,behavior:'instant'});
+}
 document.querySelectorAll('[data-role]').forEach(el=>el.addEventListener('click',()=>enterPlanner(el.dataset.role)));
-$('changeRole').addEventListener('click',()=>{document.body.classList.add('landing-mode');document.body.classList.remove('planner-mode');window.scrollTo({top:0,behavior:'instant'});});
+$('landingStart').value=state.iterations[0]?.start||'';
+$('landingStart').addEventListener('change',()=>{$('landingError').textContent='';});
+$('changeRole').addEventListener('click',()=>{$('landingStart').value=state.iterations[0]?.start||'';document.body.classList.add('landing-mode');document.body.classList.remove('planner-mode');window.scrollTo({top:0,behavior:'instant'});});
 $('relevantOnly').addEventListener('click',()=>{state.showRelevantOnly=!state.showRelevantOnly;renderRoles();renderLibrary();saveState()});
 $('search').addEventListener('input',renderLibrary);
 $('selectRelevant').addEventListener('click',()=>{presetPick();renderAll()});
