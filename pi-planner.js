@@ -56,7 +56,29 @@ function fresh(){return {
 }}
 function safeLoad(){try{const j=JSON.parse(localStorage.getItem(K));if(j&&Array.isArray(j.arts)&&Array.isArray(j.agenda)&&Array.isArray(j.people)&&Array.isArray(j.checks)&&Array.isArray(j.days))return {...fresh(),...j};}catch(e){}return fresh()}
 let state=safeLoad(),step=0,tab='overview',editing=null;
-const save=()=>{try{localStorage.setItem(K,JSON.stringify(state))}catch(e){toast('Lokale opslag niet beschikbaar; gebruik JSON-back-up.')}};
+const HISTORY=K+'-history';
+const save=()=>{
+ try{
+  const next=JSON.stringify(state),previous=localStorage.getItem(K);
+  if(previous&&previous!==next){
+   let history=[];try{history=JSON.parse(localStorage.getItem(HISTORY)||'[]')}catch(e){}
+   if(!Array.isArray(history))history=[];
+   history.push(previous);if(history.length>12)history=history.slice(-12);
+   localStorage.setItem(HISTORY,JSON.stringify(history));
+  }
+  localStorage.setItem(K,next);
+ }catch(e){toast('Lokale opslag niet beschikbaar; gebruik JSON-back-up.')}
+};
+function undoEventChange(){
+ let history=[];try{history=JSON.parse(localStorage.getItem(HISTORY)||'[]')}catch(e){}
+ if(!Array.isArray(history)||!history.length){toast('Er is nog geen vorige versie beschikbaar.');return}
+ const previous=history.pop();
+ try{const restored=JSON.parse(previous);if(!Array.isArray(restored.arts)||!Array.isArray(restored.days))throw Error('invalid');
+  state={...fresh(),...restored};localStorage.setItem(K,previous);localStorage.setItem(HISTORY,JSON.stringify(history));
+  state.ready?renderDashboard():renderWizard();toast('Vorige versie van je event hersteld.');
+ }catch(e){toast('De vorige versie kon niet worden teruggezet.')}
+}
+
 function toast(t){const el=$('toast');el.textContent=t;el.classList.add('visible');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('visible'),3500)}
 function dateAdd(s,n){if(!/^\d{4}-\d\d-\d\d$/.test(s||''))return '';const d=new Date(s+'T12:00:00');if(Number.isNaN(d.getTime()))return '';d.setDate(d.getDate()+n);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function when(s){if(!s)return 'Nog niet gepland';const d=new Date(s+'T12:00:00');return Number.isNaN(d.getTime())?'Ongeldige datum':new Intl.DateTimeFormat('nl-NL',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(d)}
@@ -391,6 +413,7 @@ $('view').addEventListener('change',onViewChange);
 $('view').addEventListener('submit',onViewSubmit);
 $('exportJSON').addEventListener('click',saveJSON);
 $('importJSON').addEventListener('click',()=>$('fileJSON').click());
+$('undoEvent').addEventListener('click',undoEventChange);
 $('fileJSON').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const data=JSON.parse(await file.text());if(!Array.isArray(data.arts)||!Array.isArray(data.agenda)||!Array.isArray(data.people)||!Array.isArray(data.checks)||!Array.isArray(data.days))throw new Error('Geen geldig eventbestand');state={...fresh(),...data};save();state.ready?renderDashboard():renderWizard();toast('Event succesvol ingeladen.')}catch(err){toast('Import mislukt: '+err.message)}e.target.value=''});
 $('fileCSV').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{importCSV(await f.text())}catch(err){toast('CSV-import mislukt: '+err.message)}e.target.value=''});
 state.ready?renderDashboard():renderWizard();
