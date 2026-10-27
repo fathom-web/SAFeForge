@@ -116,6 +116,63 @@ html{scroll-padding-top:30px}body{background:#f4f7f6;color:var(--text);font-fami
 @media(max-width:650px){.forge-brandmark{width:43px;height:43px}.brand-lockup .brand{font-size:15px}.brand-lockup .tag{font-size:9px;letter-spacing:.1em}.forge-intro{padding:30px 21px 33px;border-radius:22px;margin:14px 0 20px}.forge-intro h1{font-size:34px;line-height:1.1;margin:17px 0}.forge-intro .hero-lead{font-size:13px}.intro-label{font-size:9px;letter-spacing:.09em}.hero-steps{grid-template-columns:1fr 1fr;gap:7px}.hero-step{padding:10px;gap:7px}.hero-step b{font-size:15px}.hero-step span{font-size:11px}.hero-step small{font-size:9px}.hero-how-title{font-size:8px;letter-spacing:.07em}.hero-start{width:100%}.hero-privacy{font-size:9px}}
 @media(max-width:365px){.hero-steps{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.hero-halo,.hero-logo-plate{animation:none!important}}
+
+/* Responsive ART delivery flow: real readable cards instead of sideways 700px diagrams */
+@media (max-width:900px){
+  .framework{border-radius:20px;overflow:hidden;margin:24px 0 36px}
+  .framework-heading{padding:24px 22px 19px;display:flex;flex-direction:column;align-items:flex-start;gap:13px}
+  .framework-heading h2{font-size:clamp(27px,5vw,33px);line-height:1.12;letter-spacing:-.045em}
+  .framework-heading p{font-size:14px;line-height:1.55}
+  .framework-legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11px}
+  .framework-map{padding:0 14px 14px;display:grid;gap:13px}
+  .map-lane{display:block;min-height:0;margin:0;border:1px solid #d5e6df;border-radius:15px;overflow:hidden}
+  .lane-name{display:flex;flex-direction:row;justify-content:flex-start;align-items:center;gap:11px;border-right:0;border-bottom:1px solid #dce9e4;padding:14px 16px}
+  .lane-symbol{font-size:23px;margin:0;flex-shrink:0}
+  .lane-name strong{font-size:12px;letter-spacing:.065em}
+  .lane-name small{font-size:11px;margin-left:auto;text-align:right}
+  .lane-track{display:block!important;overflow:visible!important;padding:16px!important;width:100%;min-width:0}
+  .strategy-items{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;justify-content:initial;text-align:center;white-space:normal;min-width:0;font-size:12px}
+  .strategy-items i{display:none}
+  .strategy-items span{display:flex;justify-content:center;align-items:center;min-width:0;min-height:52px;padding:11px 9px;line-height:1.4;white-space:normal;overflow-wrap:anywhere}
+  .nodes{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));min-width:0!important;gap:12px;width:100%}
+  .map-node{min-width:0!important;min-height:100px;padding:16px;text-align:left;display:flex;flex-direction:column;justify-content:center;align-items:flex-start}
+  .map-node:not(:last-child):after{display:none}
+  .node-top{font-size:10px;letter-spacing:.12em}
+  .map-node strong{font-size:17px;line-height:1.25;margin-top:6px}
+  .map-node small{font-size:12px;line-height:1.4;margin-top:4px}
+  .team-nodes{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));min-width:0!important;gap:10px;width:100%;flex-wrap:initial}
+  .team-nodes>span{display:none}
+  .team-nodes button{min-width:0;width:100%;min-height:57px;text-align:center;padding:13px 10px;font-size:13px;line-height:1.4;overflow-wrap:anywhere}
+  .cadence-flow{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;width:100%;min-width:0!important;white-space:normal;align-items:stretch}
+  .cadence-flow span,.cadence-flow b{min-width:0;width:100%;min-height:49px;display:flex;align-items:center;justify-content:center;font-size:11px;line-height:1.35;white-space:normal;overflow-wrap:anywhere;padding:9px 5px}
+  .framework-foot{padding:14px 20px}
+}
+@media (max-width:650px){
+  .framework-map{padding:0 10px 12px;gap:11px}
+  .framework-heading{padding:22px 17px 20px}
+  .framework-heading h2{font-size:29px}
+  .framework-heading p{font-size:14px}
+  .framework-legend{gap:7px 11px}
+  .lane-name{padding:13px 12px;flex-wrap:wrap}
+  .lane-name small{font-size:10px}
+  .lane-track{padding:12px!important}
+  .nodes{grid-template-columns:1fr;gap:12px}
+  .map-node{min-height:0;padding:16px 18px}
+  .map-node strong{font-size:18px}
+  .map-node small{font-size:12px}
+  .team-nodes{grid-template-columns:1fr;gap:9px}
+  .team-nodes button{min-height:51px;text-align:left;padding:13px 17px;font-size:14px}
+  .strategy-items{gap:8px}
+  .strategy-items span{min-height:54px;font-size:11px;padding:9px 6px}
+  .cadence-flow{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .cadence-flow span,.cadence-flow b{min-height:52px;font-size:12px;padding:10px 7px}
+  .framework-foot{padding:14px 15px;font-size:10px}
+}
+@media (max-width:340px){
+  .strategy-items{grid-template-columns:1fr}
+  .cadence-flow{grid-template-columns:1fr}
+  .lane-name small{width:100%;margin-left:34px;text-align:left}
+}
 </style>
 </head>
 <body>
