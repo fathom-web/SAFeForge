@@ -118,7 +118,7 @@ function mealOptions(v){return [['regular','Standaard'],['veggie','Vegetarisch']
 function statusOptions(v){return [['invited','Uitgenodigd'],['yes','Aanwezig'],['maybe','Misschien'],['no','Afwezig']].map(a=>option(v,a[0],a[1])).join('')}
 function statusName(v){return {invited:'Uitgenodigd',yes:'Aanwezig',maybe:'Misschien',no:'Afwezig'}[v]||'Uitgenodigd'}
 function counts(){const scale=scaleCounts();return {...scale,registrations:state.people.length,yes:state.people.filter(p=>p.status==='yes').length,maybe:state.people.filter(p=>p.status==='maybe').length,pending:state.people.filter(p=>p.status==='invited').length,done:state.checks.filter(c=>c.done).length}}
-function renderDashboard(){if(typeof ensureOperations==='function')ensureOperations();
+function renderDashboard(){if(typeof ensureOperations==='function')ensureOperations();if(typeof mfEnsure==='function')mfEnsure();
  $('wizard').classList.add('off');$('dashboard').classList.add('on');
  const c=counts();
  $('dashboardTitle').textContent=state.eventName||'PI Planning';
@@ -142,7 +142,14 @@ function renderDashboard(){if(typeof ensureOperations==='function')ensureOperati
   invites:()=>viewInvites(),
   checklist:()=>viewChecklist(),
   checkin:()=>viewCheckin(),
-  feedback:()=>viewFeedback()
+  feedback:()=>viewFeedback(),
+  readiness:()=>mfReadiness(),
+  capacity:()=>mfCapacity(),
+  objectives:()=>mfObjectives(),
+  board:()=>mfBoard(),
+  risks:()=>mfRisks(),
+  confidence:()=>mfConfidence(),
+  results:()=>mfResults()
  };
  const notice=$('plannerMessage');
  try{
@@ -330,7 +337,7 @@ function dispatchAction(name){if(typeof operationalAction==='function'&&operatio
   editing=null;save();renderDashboard();return toast('Programma bijgewerkt.');
  }
 }
-function onViewClick(e){if(typeof operationalClick==='function'&&operationalClick(e))return;
+function onViewClick(e){if(typeof mfClick==='function'&&mfClick(e))return;if(typeof operationalClick==='function'&&operationalClick(e))return;
  const el=e.target.closest('button');if(!el)return;
  if(el.dataset.tab){tab=el.dataset.tab;editing=null;renderDashboard();return}
  if(el.dataset.action){dispatchAction(el.dataset.action);return}
@@ -339,7 +346,7 @@ function onViewClick(e){if(typeof operationalClick==='function'&&operationalClic
  if(el.dataset.personDelete!==undefined){const i=+el.dataset.personDelete;if(confirm('Deelnemer '+state.people[i]?.name+' verwijderen?')){state.people.splice(i,1);save();renderDashboard()}return}
  if(el.dataset.removeCheck!==undefined){state.checks.splice(+el.dataset.removeCheck,1);save();renderDashboard()}
 }
-function onViewChange(e){if(typeof operationalChange==='function'&&operationalChange(e))return;
+function onViewChange(e){if(typeof mfChange==='function'&&mfChange(e))return;if(typeof operationalChange==='function'&&operationalChange(e))return;
  const el=e.target;
  function set(key,index,property){if(state.people[index]){state.people[index][key]=property;save();renderDashboard()}}
  if(el.dataset.teamRoom!==undefined||el.dataset.teamSm!==undefined||el.dataset.teamPo!==undefined){
@@ -356,7 +363,7 @@ function onViewChange(e){if(typeof operationalChange==='function'&&operationalCh
  if(el.dataset.mealNote!==undefined){const i=+el.dataset.mealNote;if(state.people[i]){state.people[i].mealNote=el.value;save()}return}
  if(el.dataset.checkIndex!==undefined){const x=state.checks[+el.dataset.checkIndex];if(x){x.done=el.checked;save();renderDashboard()}return}
 }
-function onViewSubmit(e){if(typeof operationalSubmit==='function'&&operationalSubmit(e))return;
+function onViewSubmit(e){if(typeof mfSubmit==='function'&&mfSubmit(e))return;if(typeof operationalSubmit==='function'&&operationalSubmit(e))return;
  if(e.target.id==='newPerson'){e.preventDefault();const d=new FormData(e.target),name=String(d.get('name')||'').trim();if(!name)return;state.people.push({id:uid(),name,email:String(d.get('email')||'').trim(),role:String(d.get('role')||'').trim(),artId:'',teamId:'',status:'invited',days:[true,true],meals:['regular','regular'],mealNote:''});save();renderDashboard();toast('Deelnemer toegevoegd.');return}
  if(e.target.id==='newCheck'){e.preventDefault();const d=new FormData(e.target),name=String(d.get('name')||'').trim();if(!name)return;state.checks.push({id:uid(),name,done:false});save();renderDashboard();return}
 }
