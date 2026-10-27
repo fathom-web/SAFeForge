@@ -18,10 +18,12 @@ function mfEnsure(){
  if(!state.method||typeof state.method!=='object')state.method={};
  const m=state.method;
  if(!Array.isArray(m.readiness))m.readiness=MF_READINESS.map((x,i)=>({id:'r'+i,group:x[0],title:x[1],owner:x[2],status:'open',note:''}));
- for(const name of ['capacity','objectives','features','risks','votes','decisions'])if(!Array.isArray(m[name]))m[name]=[];
+ for(const name of ['capacity','objectives','features','risks','votes','artVotes','decisions'])if(!Array.isArray(m[name]))m[name]=[];
  if(!m.rework)m.rework='not-needed';
  if(!m.profile)m.profile='classical-safe';
  const teams=state.arts.flatMap(a=>a.teams.map(t=>({art:a,team:t}))),ids=new Set(teams.map(x=>x.team.id));
+ for(const a of state.arts)if(!m.artVotes.some(v=>v.artId===a.id))m.artVotes.push({id:uid(),artId:a.id,score:0,note:''});
+ m.artVotes=m.artVotes.filter(v=>state.arts.some(a=>a.id===v.artId));
  for(const x of teams){
   for(let i=1;i<=4;i++)if(!m.capacity.some(c=>c.teamId===x.team.id&&c.iteration===i))m.capacity.push({id:uid(),teamId:x.team.id,iteration:i,available:(+x.team.members||8)*8,planned:0});
   if(!m.votes.some(v=>v.teamId===x.team.id))m.votes.push({id:uid(),teamId:x.team.id,score:0,note:''});
@@ -96,13 +98,15 @@ function mfRisks(){
 }
 function mfConfidence(){
  mfEnsure();const m=state.method,v=m.votes,r=m.risks,objective=m.objectives,ready=m.readiness.every(x=>x.status==='ready');
- const missing=v.filter(x=>!x.score),low=v.filter(x=>x.score>0&&x.score<4),open=r.filter(x=>x.roam==='Open');
+ const missing=v.filter(x=>!x.score),low=v.filter(x=>x.score>0&&x.score<=2),open=r.filter(x=>x.roam==='Open');
  const issues=[];
  if(!ready)issues.push('Readiness is nog niet volledig');
  if(!objective.length)issues.push('Team PI Objectives ontbreken');
  if(open.length)issues.push(open.length+' risico’s zijn niet geROAMd');
  if(missing.length)issues.push(missing.length+' teams hebben niet gestemd');
- if(low.length)issues.push(low.length+' teams hebben onvoldoende confidence');
+ if(low.length)issues.push(low.length+' teams hebben lage confidence (1 of 2); bespreek en herplan waar nodig');
+ if(m.artVotes.some(x=>!x.score))issues.push('ART-confidence ontbreekt voor een of meer ARTs');
+ if(m.artVotes.some(x=>x.score>0&&x.score<=2))issues.push('ART-confidence 1 of 2 vraagt bespreking/herplanning');
  if(m.rework==='needed')issues.push('Plan Rework staat nog op noodzakelijk');
  const canCommit=!issues.length;
  return mfHead('06 / ALIGNMENT','Confidence Vote & Plan Rework','Team- en ART-confidence vereisen gezamenlijke beoordeling. Bij onvoldoende vertrouwen wordt herplanning noodzakelijk.')+
@@ -110,6 +114,7 @@ function mfConfidence(){
  (issues.length?'<div class="mf-alert"><strong>Commitment nog niet gereed</strong><ul>'+issues.map(i=>'<li>'+esc(i)+'</li>').join('')+'</ul></div>':'<div class="audit-good">Registratie voldoet aan de ingestelde basiscontroles. De uiteindelijke beslissing blijft bij de ART.</div>')+
  '<div class="tablewrap"><table><thead><tr><th>ART</th><th>Team</th><th>Confidence</th><th>Toelichting</th></tr></thead><tbody>'+
  v.map(x=>{const t=mfTeam(x.teamId);return '<tr><td>'+esc(t?.art.name||'')+'</td><td>'+esc(t?.team.name||'')+'</td><td><select data-mf="votes:'+x.id+':score">'+mfOpts([[0,'Nog niet'],[1,'1'],[2,'2'],[3,'3'],[4,'4'],[5,'5']],x.score)+'</select></td><td><input data-mf="votes:'+x.id+':note" value="'+esc(x.note||'')+'"></td></tr>'}).join('')+'</tbody></table></div>'+
+ '<h3>ART-brede confidence vote</h3><div class="tablewrap"><table><thead><tr><th>ART</th><th>Score (1–5)</th><th>Toelichting / blokkade</th></tr></thead><tbody>'+m.artVotes.map(v=>'<tr><td>'+esc(state.arts.find(a=>a.id===v.artId)?.name||'')+'</td><td><select data-mf="artVotes:'+v.id+':score">'+mfOpts([[0,'Nog niet'],[1,'1'],[2,'2'],[3,'3'],[4,'4'],[5,'5']],v.score)+'</select></td><td><input data-mf="artVotes:'+v.id+':note" value="'+esc(v.note||'')+'"></td></tr>').join('')+'</tbody></table></div>'+
  '<div class="entry"><h3>ART Plan Rework & Commitment</h3><div class="formgrid"><label class="field"><span>Herplanning</span><select data-mf-root="rework">'+mfOpts([['not-needed','Niet nodig'],['needed','Nodig'],['in-progress','In uitvoering'],['resolved','Afgerond']],m.rework)+'</select></label>'+
  '<label class="field"><span>Planstatus</span><button type="button" class="btn '+(canCommit?'primary':'')+'" data-mf-action="commit" '+(canCommit?'':'disabled')+'>'+(m.committedAt?'✓ Vastgesteld op '+esc(m.committedAt):'Plan vaststellen')+'</button></label></div></div>'+
  '<h3>Planning adjustments / Management Review</h3>'+
@@ -123,7 +128,7 @@ function mfResults(){
  if(!m.objectives.length)miss.push('Objectives ontbreken');
  if(m.objectives.some(x=>x.commitment==='committed'&&(!x.plannedBV||+x.plannedBV<1)))miss.push('Committed objectives zonder Business Value');
  if(m.risks.some(x=>x.roam==='Open'))miss.push('Open PI-risico’s');
- if(m.votes.some(x=>!x.score))miss.push('Ontbrekende confidence votes');
+ if(m.votes.some(x=>!x.score)||m.artVotes.some(x=>!x.score))miss.push('Ontbrekende team- of ART-confidence votes');
  if(!m.committedAt)miss.push('ART-plan nog niet formeel vastgesteld');
  return mfHead('07 / RESULTS','PI Plan & overdracht','Controleer de uitkomsten van PI Planning en draag besluiten, doelen, risico’s en afhankelijkheden over naar de uitvoering.')+
  mfCounters([['Objectives',m.objectives.length],['Risico’s',m.risks.length],['Besluiten',m.decisions.length]])+
@@ -152,7 +157,7 @@ function mfClick(e){
  if(el.dataset.mfAction==='excel'){exportEventExcel();return true}
  if(el.dataset.mfAction==='commit'){
   const m=state.method;
-  if(!m.objectives.length||m.readiness.some(x=>x.status!=='ready')||m.risks.some(x=>x.roam==='Open')||m.votes.some(x=>x.score<4)||m.rework==='needed'){toast('Nog onvoldoende klaar voor commitment.');return true}
+  if(!m.objectives.length||m.readiness.some(x=>x.status!=='ready')||m.risks.some(x=>x.roam==='Open')||(m.votes.some(x=>x.score<=2)||m.artVotes.some(x=>x.score<=2))||m.rework==='needed'){toast('Nog onvoldoende klaar voor commitment.');return true}
   m.committedAt=new Date().toISOString().slice(0,10);save();renderDashboard();return true;
  }
  return false;
