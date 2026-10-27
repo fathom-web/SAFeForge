@@ -1,60 +1,33 @@
 # SAFe Agile Forge
 
-**PI Ceremony Planner — NOVYX FORGE**
+**SAFe Agile Forge — PI Ceremony Planner**, a NOVYX FORGE project.
 
-Selecteer je rol (RTE, PM, PO of Scrum Master), kies je ceremonies, voer de iteratiedatums in en exporteer je kalender als Outlook `.ics`. De applicatie is statisch, client-side en heeft geen backend.
+Select a role (RTE, PM, PO or Scrum Master), select ceremonies, enter your PI iteration dates, preview the proposed events and download an Outlook-compatible `.ics` calendar. Runs entirely in the browser without a backend.
 
-## Productiewebsite
+## Hosting and publication
 
-**https://safeforge.novyxforge.com** — hosting bij **mijn.host**, broncode op **GitHub**.
+- **Production address:** https://safeforge.novyxforge.com (intended; activate subdomain and SSL at mijn.host).
+- **Source control:** https://github.com/fathom-web/SAFeForge (branch `main`).
+- **Hosting:** mijn.host / DirectAdmin, **not GitHub Pages**.
+- **Deployment:** DirectAdmin Git Manager, same method as the main NovyxForge site: **FETCH → DEPLOY**.
+- There is **no FTP GitHub Actions workflow** and no FTP credentials are needed.
 
-> GitHub Pages is **niet** de host. Het subdomein moet bij mijn.host bestaan en naar de eigen mijn.host-webhosting verwijzen. Zet `safeforge` in DNS niet op `fathom-web.github.io`.
+### Initial hosting setup
 
-## Automatisch publiceren via GitHub
+1. At mijn.host, go to **Hosting → your hosting package → Open DirectAdmin**.
+2. In DirectAdmin, open **Subdomain Management** for `novyxforge.com`, and add `safeforge`.
+3. Note the actual **document root** displayed for the new subdomain. A standard independent subdomain often uses `domains/safeforge.novyxforge.com/public_html`; legacy layouts can differ. **Do not guess this path or deploy to the main site's root.**
+4. Open **Git Manager** in DirectAdmin under the hosting account, create/import a **new** Git repository:
+   - Remote: `https://github.com/fathom-web/SAFeForge.git`
+   - Branch: `main`
+   - Keyfile: blank (repository is public)
+   - Deploy directory: **exactly the subdomain document root** obtained in step 3.
+5. Use **FETCH**, then **DEPLOY**. Confirm `index.html` appears in the subdomain document root and the site loads.
+6. Activate SSL/HTTPS for `safeforge.novyxforge.com` using the hosting control panel.
+7. Every subsequent push to GitHub can be deployed through **FETCH → DEPLOY**. Automatic updates require configuring a DirectAdmin webhook/automation separately; a GitHub push alone does not currently auto-deploy.
 
-Er staat een GitHub Actions-workflow in [`.github/workflows/deploy-mijnhost.yml`](.github/workflows/deploy-mijnhost.yml). Iedere push naar `main` met gewijzigde websitebestanden start automatisch de deploy zodra de repositoryvariabele `FORGE_DEPLOY_ENABLED` de waarde `true` heeft.
+Do **not** change the Git deployment or document root for `novyxforge.com`. The website and repository must remain isolated.
 
-### Eenmalige mijn.host-inrichting
+## Security and disclaimer
 
-1. Open in het mijn.host controlepaneel **Hosting → je hostingpakket → Domeinnamen → Subdomeinen** en maak **safeforge** aan onder **novyxforge.com**.
-2. Zoek de **eigen webroot/document root** van dit subdomein op.
-3. Maak via **Hosting → je hostingpakket → FTP accounts** een **apart FTP-account uitsluitend voor SAFe Agile Forge**, met de hoofdmap exact op de webroot van het subdomein. Daarmee kan de automatische deployment nooit een andere Forge-site overschrijven.
-4. Noteer de beveiligde FTPS-hostnaam, de FTP-gebruikersnaam en het wachtwoord. Gebruik een geldige FTPS-verbinding (standaard expliciete FTPS op poort 21; pas de workflow aan als mijn.host voor jouw account een andere poort voorschrijft).
-5. Zorg dat `safeforge.novyxforge.com` in DNS naar je mijn.host-webhosting verwijst; gebruik de instellingen voor het subdomein vanuit mijn.host, niet de oude GitHub Pages-CNAME.
-
-### Eenmalige GitHub-inrichting
-
-Ga naar **Settings → Secrets and variables → Actions** in deze repository.
-
-Maak bij **Repository secrets** exact deze drie secrets aan:
-
-| Secret | Waarde |
-| --- | --- |
-| `FTP_SERVER` | FTPS-serverhost die mijn.host voor jouw pakket opgeeft |
-| `FTP_USERNAME` | De gebruikersnaam van het speciale FTP-account voor safeforge |
-| `FTP_PASSWORD` | Het wachtwoord van dat FTP-account |
-
-Maak bij **Repository variables** deze variabele aan:
-
-| Variable | Waarde |
-| --- | --- |
-| `FORGE_DEPLOY_ENABLED` | `true` |
-
-De eerste deploy start je via **Actions → Deploy SAFe Agile Forge to mijn.host → Run workflow**, of door een wijziging aan `index.html` te pushen. Vervolgens gaat dat automatisch bij iedere relevante push.
-
-### Belangrijk voor veiligheid
-
-- De GitHub Actions-workflow publiceert alleen `index.html` en een eventuele `assets/`-map.
-- Gebruik een apart, tot de webroot van `safeforge` beperkt FTP-account.
-- Zet wachtwoorden nooit in code, README, screenshots of Issues; alleen in **GitHub Actions secrets**.
-- De workflow is met `FORGE_DEPLOY_ENABLED` standaard uitgeschakeld, totdat je de secrets en het hostingpad hebt gecontroleerd.
-- De workflow gebruikt versleutelde **FTPS**, niet onbeveiligde FTP.
-- Github Actions synchroniseert de eigen websitebestanden zonder een volledige schoonmaak van de doelmap.
-
-## Lokaal gebruiken
-
-Open `index.html` in een browser. Geen installatie of server nodig.
-
-## Disclaimer
-
-Voer geen vertrouwelijke, gerubriceerde of operationeel gevoelige informatie in een publieke website in. Import van `.ics`-bestanden op werkapparatuur valt onder het lokale beveiligingsbeleid. Onafhankelijke tool, niet officieel gelieerd aan Scaled Agile.
+The app is a local browser-based calendar proposal tool. It does not connect to Microsoft 365 or Defensie systems. Imported `.ics` files are not automatically distributed as meeting invitations. Do not enter operationally sensitive or classified information in a publicly hosted tool. Independent project, not affiliated with Scaled Agile.
