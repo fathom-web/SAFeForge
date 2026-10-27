@@ -124,8 +124,37 @@ function renderDashboard(){if(typeof ensureOperations==='function')ensureOperati
  $('dashboardTitle').textContent=state.eventName||'PI Planning';
  $('eventSubheading').textContent=(state.piName||'PI')+' · '+when(state.days[0])+' & '+when(state.days[1]);
  $('metrics').innerHTML=[['ARTs',c.arts],['Teams',c.teams],['Verwacht',c.people],['Aangemeld',c.yes],['Checks gereed',c.done+'/'+state.checks.length],...(typeof operationsMetrics==='function'?[['Open taken',operationsMetrics().due],['Sprekers bevestigd',operationsMetrics().speakers],['Conflictsignalen',scheduleWarnings().length]]:[])].map(a=>'<div class="metric"><b>'+a[1]+'</b><small>'+a[0]+'</small></div>').join('');
- document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
- $('view').innerHTML=tab==='overview'?viewOverview():tab==='agenda'?viewAgenda():tab==='rooms'?viewRooms():tab==='arts'?viewARTs():tab==='tasks'?viewTasks():tab==='speakers'?viewSpeakers():tab==='audit'?viewAudit():tab==='checkin'?viewCheckin():tab==='feedback'?viewFeedback():tab==='people'?viewPeople():tab==='catering'?viewCatering():tab==='invites'?viewInvites():viewChecklist();
+ document.querySelectorAll('[data-tab]').forEach(b=>{
+  const active=b.dataset.tab===tab;
+  b.classList.toggle('active',active);
+  if(b.closest('#tabs'))b.setAttribute('aria-current',active?'page':'false');
+ });
+ const renderers={
+  overview:()=>viewOverview(),
+  agenda:()=>viewAgenda(),
+  rooms:()=>viewRooms(),
+  arts:()=>viewARTs(),
+  tasks:()=>viewTasks(),
+  speakers:()=>viewSpeakers(),
+  audit:()=>viewAudit(),
+  people:()=>viewPeople(),
+  catering:()=>viewCatering(),
+  invites:()=>viewInvites(),
+  checklist:()=>viewChecklist(),
+  checkin:()=>viewCheckin(),
+  feedback:()=>viewFeedback()
+ };
+ const notice=$('plannerMessage');
+ try{
+  if(!renderers[tab])throw new Error('Onbekend onderdeel: '+tab);
+  $('view').innerHTML=renderers[tab]();
+  if(notice){notice.textContent='';notice.classList.remove('visible');}
+ }catch(error){
+  console.error('SAFe Forge: tabweergave',tab,error);
+  const label=document.querySelector('#tabs button.active')?.textContent||tab;
+  $('view').innerHTML='<section class="panel"><h2>Dit onderdeel kan niet worden geopend</h2><p class="sub">Er is een probleem bij het laden van '+esc(label)+'. Vernieuw de pagina. Je opgeslagen PI-gegevens blijven behouden.</p></section>';
+  if(notice){notice.textContent='Laadfout voor '+label+'. Vernieuw de pagina met Ctrl + F5. Blijft het probleem bestaan, meld dit dan aan de beheerder.';notice.classList.add('visible');}
+ }
 }
 function paneHead(kicker,title,desc){return '<div class="kicker">'+kicker+'</div><h2>'+title+'</h2><p class="sub">'+desc+'</p>'}
 function viewOverview(){
