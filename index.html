@@ -173,6 +173,62 @@ html{scroll-padding-top:30px}body{background:#f4f7f6;color:var(--text);font-fami
   .cadence-flow{grid-template-columns:1fr}
   .lane-name small{width:100%;margin-left:34px;text-align:left}
 }
+
+/* Landing page onboarding and narrow-screen corrections */
+.forge-intro .role-gateway{margin-top:25px;padding:18px;border:1px solid #72989d7b;background:#f8ffff0e;box-shadow:none;border-radius:18px;color:#f8ffff}
+.forge-intro .role-gateway::before{height:2px;background:linear-gradient(90deg,#9df1db,#a8c7ef)}
+.forge-intro .role-gateway .step-heading{display:block}
+.forge-intro .role-gateway .step-kicker{display:block;color:#92ddcc;padding:0;margin-bottom:6px}
+.forge-intro .role-gateway h2{font-size:clamp(21px,2vw,26px);color:#f4fffd;letter-spacing:-.04em}
+.forge-intro .role-gateway p{color:#bacbdb;font-size:12px}
+.forge-intro .rolebar{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:14px 0 9px}
+.forge-intro .role{background:#162e44;color:#f0fffa;border-color:#456c75;padding:10px;min-height:115px;border-radius:12px}
+.forge-intro .role:hover{border-color:#a2f7df}
+.forge-intro .role.active{background:#b7f0dd;color:#123e45;border-color:#b7f0dd}
+.forge-intro .role-glyph{height:27px;width:27px;font-size:15px;border-radius:7px;background:#a4f4df26;color:#a4f4df;margin-bottom:7px}
+.forge-intro .role.active .role-glyph{color:#164d48;background:#a3d8cc}
+.forge-intro .role strong{font-size:12px;line-height:1.3;overflow-wrap:anywhere}
+.forge-intro .role small{font-size:9px;line-height:1.3;color:#b7c8ce;margin-top:4px}
+.forge-intro .role.active small{color:#416e68}
+.forge-intro .role-cta{font-size:9px;padding-top:10px;color:#b0f6e0}
+.forge-intro .role.active .role-cta{color:#256d5e}
+.forge-intro .gateway-footer{margin:0;gap:8px}
+.forge-intro .gateway-footer .hint{color:#c2d7d6}
+.forge-intro .gateway-footer .btn{border-color:#719991;background:#204052;color:#e8fff7}
+.export-actions{display:grid;gap:10px}
+.export-actions .btn.secondary{background:#ebf6f4;color:#176f65;border:1px solid #8acbbc}
+.export-actions .btn.secondary:hover{background:#dcf1eb}
+.panel,.cols>div,.sidebar,.shell,.role-gateway,.framework,.hero,.forge-intro{min-width:0}
+.panel{overflow-wrap:anywhere}
+@media(max-width:960px){.forge-intro .rolebar{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:650px){
+ html,body{max-width:100%;overflow-x:clip}
+ .shell{width:calc(100% - 26px);max-width:100%}
+ .forge-intro .role-gateway{padding:14px}
+ .forge-intro .rolebar{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .forge-intro .role{min-height:116px}
+ .forge-intro .role strong{font-size:13px}
+ .forge-intro .role small{font-size:10px}
+ .forge-intro .gateway-footer{flex-wrap:wrap;align-items:flex-start}
+ .cols{display:flex;flex-direction:column;align-items:stretch;width:100%;gap:16px}
+ .cols>div,.cols>.sidebar{width:100%;min-width:0;max-width:100%}
+ .sidebar{display:flex;flex-direction:column;position:static}
+ .sidebar .panel{width:100%;max-width:100%}
+ .summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+ .stat{min-width:0;padding:8px 6px}
+ .stat b{font-size:19px}
+ .stat small{font-size:10px;overflow-wrap:anywhere}
+ .field input,.field select,.date-field input,.small-input,.search{min-width:0;max-width:100%;width:100%}
+ .date-inputs{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ .date-field{min-width:0}
+ .date-field input{font-size:12px;padding:8px 3px}
+ .row-btns{max-width:100%}
+ .toolbar,.filters,.heading{max-width:100%}
+ .heading span{white-space:normal;overflow-wrap:anywhere}
+ .btn.wide{white-space:normal;overflow-wrap:anywhere;text-align:center}
+ .notice,.message{overflow-wrap:anywhere;white-space:normal}
+ .tablewrap{width:100%;max-width:100%}
+}
 </style>
 </head>
 <body>
@@ -198,7 +254,17 @@ html{scroll-padding-top:30px}body{background:#f4f7f6;color:var(--text);font-fami
         <div class="hero-step"><b>04</b><span>Exporteer naar Outlook<small>Download jouw eigen .ics-kalender</small></span></div>
       </div>
     </div>
-    <div class="intro-actions"><a class="hero-start" href="#roleGateway">Start met jouw ART-rol <span aria-hidden="true">↗</span></a><span class="hero-privacy"><span aria-hidden="true">◈</span> Geen account · Geen koppeling met Outlook of Defensie</span></div>
+    <div class="intro-actions"><span class="hero-privacy"><span aria-hidden="true">◈</span> Geen account · Geen koppeling met Outlook of Defensie</span></div>
+  <section class="role-gateway" id="roleGateway" aria-labelledby="roleQuestion">
+  <div class="step-heading"><span class="step-kicker">01 / GET STARTED</span><div><h2 id="roleQuestion">Welke rol heb jij binnen jouw ART?</h2><p>Selecteer jouw rol. We vinken de relevante ceremonies alvast aan; je kunt ze daarna vrij aanpassen.</p></div></div>
+  <div class="rolebar" id="rolebar">
+    <button class="role" data-role="RTE" type="button"><span class="role-glyph">↗</span><strong>RTE</strong><small>Release Train Engineer</small><span class="role-cta">Kies rol <span aria-hidden="true">→</span></span></button>
+    <button class="role" data-role="PM" type="button"><span class="role-glyph">◇</span><strong>PM</strong><small>Product Manager</small><span class="role-cta">Kies rol <span aria-hidden="true">→</span></span></button>
+    <button class="role" data-role="PO" type="button"><span class="role-glyph">◎</span><strong>PO</strong><small>Product Owner</small><span class="role-cta">Kies rol <span aria-hidden="true">→</span></span></button>
+    <button class="role" data-role="SM" type="button"><span class="role-glyph">✳</span><strong>SCRUM MASTER</strong><small>Scrum Master</small><span class="role-cta">Kies rol <span aria-hidden="true">→</span></span></button>
+  </div>
+  <div class="gateway-footer"><span id="roleHint" class="hint">Maak een keuze om te beginnen.</span><button class="btn small ghost" id="relevantOnly">Toon alleen relevant</button></div>
+</section>
   </div>
   <div class="hero-art" aria-hidden="true">
     <div class="hero-art-grid"></div>
@@ -214,16 +280,7 @@ html{scroll-padding-top:30px}body{background:#f4f7f6;color:var(--text);font-fami
     <div class="hero-visual-caption">THE FLOW OF YOUR ART <span>•</span> PI TO OUTLOOK</div>
   </div>
 </section>
-<section class="role-gateway" id="roleGateway" aria-labelledby="roleQuestion">
-  <div class="step-heading"><span class="step-kicker">01 / GET STARTED</span><div><h2 id="roleQuestion">Welke rol heb jij binnen jouw ART?</h2><p>Selecteer jouw rol. We vinken de relevante ceremonies alvast aan; je kunt ze daarna vrij aanpassen.</p></div></div>
-  <div class="rolebar" id="rolebar">
-    <button class="role" data-role="RTE" type="button"><span class="role-glyph">↗</span><strong>RTE</strong><small>Release Train Engineer</small><span class="role-cta">Kies rol <span aria-hidden="true">→</span></span></button>
-    <button class="role" data-role="PM" type="button"><span class="role-glyph">◇</span><strong>PM</strong><small>Product Manager</small><span class="role-cta">Kies rol <span aria-hidden="true">→</span></span></button>
-    <button class="role" data-role="PO" type="button"><span class="role-glyph">◎</span><strong>PO</strong><small>Product Owner</small><span class="role-cta">Kies rol <span aria-hidden="true">→</span></span></button>
-    <button class="role" data-role="SM" type="button"><span class="role-glyph">✳</span><strong>SCRUM MASTER</strong><small>Scrum Master</small><span class="role-cta">Kies rol <span aria-hidden="true">→</span></span></button>
-  </div>
-  <div class="gateway-footer"><span id="roleHint" class="hint">Maak een keuze om te beginnen.</span><button class="btn small ghost" id="relevantOnly">Toon alleen relevant</button></div>
-</section>
+
 <section class="framework" aria-labelledby="frameworkHeading">
   <div class="framework-heading"><div><span class="step-kicker">02 / THE BIG PICTURE</span><h2 id="frameworkHeading">The ART delivery flow<span>.</span></h2><p>Van planning naar value delivery. De onderdelen hieronder springen rechtstreeks naar jouw ceremonielijst.</p></div><div class="framework-legend"><span><i class="legend-pip teal"></i> ART events</span><span><i class="legend-pip blue"></i> Team events</span><span><i class="legend-pip amber"></i> Improvement</span></div></div>
   <div class="framework-map">
@@ -236,11 +293,11 @@ html{scroll-padding-top:30px}body{background:#f4f7f6;color:var(--text);font-fami
   </div>
   <div class="framework-foot"><span>SAFe AGILE FORGE / THE ART FLOW</span><span>EVERY EVENT. ONE CLEAR RHYTHM.</span></div>
 </section>
-<div class="workspace-lead"><div><span class="step-kicker">03 / BUILD YOUR CALENDAR</span><h2>Make it yours.</h2><p>De ceremonies zijn jouw vertrekpunt. Pas de datums en tijden aan en download de agenda voor Outlook.</p></div><span class="workspace-breadcrumb">SET UP → SELECT → EXPORT</span></div>
+<div class="workspace-lead" id="workspaceLead"><div><span class="step-kicker">03 / BUILD YOUR CALENDAR</span><h2>Make it yours.</h2><p>De ceremonies zijn jouw vertrekpunt. Pas de datums en tijden aan en download de agenda voor Outlook.</p></div><span class="workspace-breadcrumb">SET UP → SELECT → EXPORT</span></div>
 <main class="cols">
 <aside class="sidebar">
 <section class="panel"><h2>2. Planning Interval</h2><p class="sub">Vul iedere iteratie afzonderlijk in. Voeg zoveel iteraties toe als nodig.</p><div class="field"><label for="piName">PI-naam</label><input id="piName" maxlength="90" placeholder="bijv. PI 2027.1"></div><div class="auto-sequence"><label class="auto-check"><input id="autoCascade" type="checkbox" checked><span><strong>Automatisch doortellen</strong><small>Kies de startdatum van iteratie 1. De rest wordt per twee weken ingevuld. Verleng een iteratie, dan schuift de planning mee.</small></span></label></div><div id="iterations"></div><div class="iteration-timeline-block"><div class="iteration-timeline-head"><strong>PI-overzicht</strong><span id="piPeriodSummary">Vul een startdatum in</span></div><div id="iterationTimeline" class="iteration-timeline"></div></div><div class="row-btns"><button class="btn small ghost" id="addIteration">+ Iteratie toevoegen</button><button class="btn small ghost" id="autoDates" title="Vult ontbrekende datums vanaf 2 november 2026 met intervallen van 2 weken">Voorbeelddata</button></div><div class="divider"></div><label class="field"><span class="f-label">Huidige PI Planning (optioneel)</span><input id="currentPiPlanning" type="date"><span class="hint">Alleen nodig als je deze PI Planning wilt opnemen.</span></label><label class="field"><span class="f-label">PI Planning volgende PI (optioneel)</span><input id="nextPiPlanning" type="date"><span class="hint">Bijvoorbeeld tijdens de IP Iteration.</span></label><div class="notice">Alle datums blijven op dit apparaat. Voer geen vertrouwelijke of operationele informatie in.</div><div class="row-btns"><button id="saveConfig" class="btn small ghost">JSON opslaan</button><button id="importConfig" class="btn small ghost">JSON laden</button><input id="importFile" type="file" accept="application/json,.json" class="hide"></div></section>
-<section class="panel" id="exportPanel"><h2>4. Outlook-export</h2><p class="sub">Alleen aangevinkte ceremonies worden meegenomen. Er worden geen uitnodigingen verstuurd.</p><div class="summary"><div class="stat"><b id="selectedCount">0</b><small>geselecteerd</small></div><div class="stat"><b id="eventCount">0</b><small>afspraken</small></div><div class="stat"><b id="warningCount">0</b><small>meldingen</small></div></div><button class="btn primary wide" id="exportIcs">↓ Download Outlook-kalender (.ics)</button><p class="hint">Importeer het bestand zelf in Outlook. Een nieuwe import kan dubbele afspraken opleveren. Controleer alle voorgestelde tijden.</p><div id="validation"></div></section>
+<section class="panel" id="exportPanel"><h2>4. Download jouw PI-plan</h2><p class="sub">Download Outlook-afspraken en een persoonlijk PDF-draaiboek met jouw rol en verantwoordelijkheden per gekozen ceremonie. Geen uitnodigingen worden verstuurd.</p><div class="summary"><div class="stat"><b id="selectedCount">0</b><small>geselecteerd</small></div><div class="stat"><b id="eventCount">0</b><small>afspraken</small></div><div class="stat"><b id="warningCount">0</b><small>meldingen</small></div></div><div class="export-actions"><button class="btn primary wide" id="exportIcs">↓ Outlook-kalender (.ics)</button><button class="btn secondary wide" id="exportPdf">↓ Mijn rol &amp; verantwoordelijkheden (.pdf)</button></div><p class="hint">Importeer het bestand zelf in Outlook. Een nieuwe import kan dubbele afspraken opleveren. Controleer alle voorgestelde tijden.</p><div id="validation"></div></section>
 </aside>
 <div>
 <section class="panel" id="ceremonyPanel"><div class="heading"><h2>3. Selecteer ceremonies</h2><span id="libraryCount"></span></div><div class="toolbar"><div class="toolbar-left"><button class="btn small ghost" id="selectRelevant">Selecteer relevant</button><button class="btn small ghost" id="selectAll">Alles aanvinken</button><button class="btn small ghost" id="clearAll">Alles uit</button></div></div><div class="filters"><input class="search" id="search" type="search" placeholder="Zoek een ceremonie…" aria-label="Zoek ceremonie"><span class="pill">Bron: Leading SAFe / POPM 2026</span></div><div id="ceremonyList"></div></section>
@@ -370,7 +427,7 @@ for(const raw of allSelected()){const c=config(raw),rule=c.rule;if(rule==='curre
 all.sort((a,b)=>(a.date+a.time+a.name).localeCompare(b.date+b.time+b.name));return {events:all,missing}}
 function minutes(t){const [h,m]=(t||'00:00').split(':').map(Number);return h*60+m}
 function overlapWarnings(events){const warns=[];for(let i=0;i<events.length;i++){const a=events[i];if(!isWorkday(a.date))warns.push(`${a.name} op ${format(a.date)} valt in een weekend of op een Nederlandse feestdag.`);if(minutes(a.time)+a.duration>24*60)warns.push(`${a.name} loopt voorbij middernacht.`);for(let j=i+1;j<events.length;j++){const b=events[j];if(b.date!==a.date)break;if(a.id!==b.id&&minutes(a.time)<minutes(b.time)+b.duration&&minutes(b.time)<minutes(a.time)+a.duration)warns.push(`Overlap op ${format(a.date)}: ${a.name} / ${b.name}.`)}}return [...new Set(warns)]}
-let currentEvents=[];function refresh(){const picked=allSelected();const validation=validate(),gen=occurrences(),warnings=overlapWarnings(gen.events);currentEvents=gen.events;$('selectedCount').textContent=picked.length;$('eventCount').textContent=gen.events.length;$('warningCount').textContent=warnings.length+gen.missing.length+validation.length;$('exportIcs').disabled=!!validation.length||!gen.events.length;const messages=[...validation.map(x=>'Fout: '+x),...gen.missing.map(x=>'Niet ingepland: '+x),...warnings];$('validation').innerHTML=messages.slice(0,12).map((x,i)=>`<div class="message ${i<validation.length?'error':''}">${esc(x)}</div>`).join('')+(messages.length>12?`<div class="hint">…en nog ${messages.length-12} meldingen. Bekijk de agenda.</div>`:'');$('previewTotal').textContent=gen.events.length+' afspraken';$('previewBody').innerHTML=gen.events.slice(0,150).map(e=>`<tr><td>${esc(format(e.date))}${!isWorkday(e.date)?' ⚠':''}</td><td>${esc(e.name)}</td><td>${esc(e.time)}–${esc(endTime(e.time,e.duration))}</td><td>${esc(e.iteration)}</td></tr>`).join('')||'<tr><td colspan="4" class="empty">Vul je datums in en selecteer ceremonies.</td></tr>'+(gen.events.length>150?'<tr><td colspan="4">Toont eerste 150 afspraken; alle worden geëxporteerd.</td></tr>':'')}
+let currentEvents=[];function refresh(){const picked=allSelected();const validation=validate(),gen=occurrences(),warnings=overlapWarnings(gen.events);currentEvents=gen.events;$('selectedCount').textContent=picked.length;$('eventCount').textContent=gen.events.length;$('warningCount').textContent=warnings.length+gen.missing.length+validation.length;$('exportIcs').disabled=!!validation.length||!gen.events.length;$('exportPdf').disabled=!state.role||!picked.length;const messages=[...validation.map(x=>'Fout: '+x),...gen.missing.map(x=>'Niet ingepland: '+x),...warnings];$('validation').innerHTML=messages.slice(0,12).map((x,i)=>`<div class="message ${i<validation.length?'error':''}">${esc(x)}</div>`).join('')+(messages.length>12?`<div class="hint">…en nog ${messages.length-12} meldingen. Bekijk de agenda.</div>`:'');$('previewTotal').textContent=gen.events.length+' afspraken';$('previewBody').innerHTML=gen.events.slice(0,150).map(e=>`<tr><td>${esc(format(e.date))}${!isWorkday(e.date)?' ⚠':''}</td><td>${esc(e.name)}</td><td>${esc(e.time)}–${esc(endTime(e.time,e.duration))}</td><td>${esc(e.iteration)}</td></tr>`).join('')||'<tr><td colspan="4" class="empty">Vul je datums in en selecteer ceremonies.</td></tr>'+(gen.events.length>150?'<tr><td colspan="4">Toont eerste 150 afspraken; alle worden geëxporteerd.</td></tr>':'')}
 function endTime(t,dur){const n=minutes(t)+dur;return `${String(Math.floor(n/60)%24).padStart(2,'0')}:${String(n%60).padStart(2,'0')}`}
 function icsEscape(s){return String(s??'').replace(/\\/g,'\\\\').replace(/\r\n|\r|\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\\;')}
 function foldLine(line){const enc=new TextEncoder();let lines=[],part='',len=0;for(const char of line){const add=enc.encode(char).length;if(len+add>75){lines.push(part);part=' '+char;len=1+add}else{part+=char;len+=add}}lines.push(part);return lines.join('\r\n')}
@@ -380,6 +437,67 @@ function hashString(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCod
 function calendarICS(events){const now=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//NOVYX FORGE//SAFe Agile Forge 1.0//NL','CALSCALE:GREGORIAN','METHOD:PUBLISH','X-WR-CALNAME:'+icsEscape(state.piName+' · '+ROLE_NAMES[state.role]),'X-WR-TIMEZONE:Europe/Amsterdam','BEGIN:VTIMEZONE','TZID:Europe/Amsterdam','X-LIC-LOCATION:Europe/Amsterdam','BEGIN:DAYLIGHT','TZOFFSETFROM:+0100','TZOFFSETTO:+0200','TZNAME:CEST','DTSTART:19700329T020000','RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU','END:DAYLIGHT','BEGIN:STANDARD','TZOFFSETFROM:+0200','TZOFFSETTO:+0100','TZNAME:CET','DTSTART:19701025T030000','RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU','END:STANDARD','END:VTIMEZONE'];
 for(const e of events){const end=timeAdvance(e.date,e.time,e.duration),details=[`PI: ${state.piName}`,`Iteratie: ${e.iteration}`,`Planner: ${ROLE_NAMES[e.planner]||e.planner}`,`Facilitator: ${ROLE_NAMES[e.host]||e.host}`,`Inhoudelijk eigenaar: ${ROLE_NAMES[e.owner]||e.owner}`,'',`DOEL: ${e.desc}`,'','VOORBEREIDING:',...e.prepare.map(x=>'- '+x),'','AGENDA:',...e.agenda.map(x=>'- '+x),'',`RESULTAAT: ${e.output}`,'',`Bron: ${e.source}`,'','Gegenereerd door SAFe Agile Forge. Controleer de afspraak en nodig deelnemers zelf uit.'].join('\n');lines.push('BEGIN:VEVENT','UID:'+hashString(state.piName+'|'+e.id)+'@safe-agile-forge.local','DTSTAMP:'+now,'DTSTART;TZID=Europe/Amsterdam:'+localICSStamp(e.date,e.time),'DTEND;TZID=Europe/Amsterdam:'+localICSStamp(end.date,end.time),'SUMMARY:'+icsEscape(`[${state.piName}] ${e.name}`),'DESCRIPTION:'+icsEscape(details),'CATEGORIES:SAFe Agile Forge','STATUS:CONFIRMED','TRANSP:OPAQUE','END:VEVENT')}
 lines.push('END:VCALENDAR');return lines.map(foldLine).join('\r\n')+'\r\n'}
+
+/* A self-contained PDF writer: all bytes generated locally, no cloud, fonts or CDN.
+   A4, paginated text, core Helvetica, ASCII transliteration for PDF compatibility. */
+function safePdfText(value){return String(value??'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/\u00df/g,'ss').replace(/\u00e6/g,'ae').replace(/\u0153/g,'oe').replace(/[\u2018\u2019]/g,"'").replace(/[\u201c\u201d]/g,'"').replace(/[\u2013\u2014]/g,'-').replace(/\u2022/g,'-').replace(/[^\x20-\x7e]/g,' ')}
+function pdfEscape(str){return safePdfText(str).replace(/\\/g,'\\\\').replace(/\(/g,'\\(').replace(/\)/g,'\\)')}
+function pdfWrap(text,limit=91){const words=safePdfText(text).split(/\s+/);let lines=[],cur='';for(const word of words){if(!word)continue;if(cur&&cur.length+1+word.length>limit){lines.push(cur);cur=''}if(word.length>limit){if(cur){lines.push(cur);cur=''}for(let i=0;i<word.length;i+=limit)lines.push(word.slice(i,i+limit))}else cur+=(cur?' ':'')+word}if(cur)lines.push(cur);return lines.length?lines:['']}
+function buildRolePdf(){
+ const selected=LIBRARY.filter(c=>state.picked[c.id]);const all=occurrences().events;
+ const pages=[];let commands=[],y=0,pageNumber=0;
+ function writeAt(text,x,yPos,font=10,bold=false){return `BT /F${bold?2:1} ${font} Tf 1 0 0 1 ${x} ${Math.round(yPos)} Tm (${pdfEscape(text)}) Tj ET\n`}
+ function newPage(){if(commands.length)pages.push(commands.join(''));commands=[];pageNumber++;y=790;commands.push('0.075 0.29 0.29 rg\n');commands.push('0.07 0.52 0.48 RG 1.8 w 45 804 m 549 804 l S\n');commands.push(writeAt('SAFe AGILE FORGE  /  NOVYX FORGE',46,814,9,true));commands.push(writeAt('PAGINA '+pageNumber,487,35,8));}
+ function room(h=15){if(y<h+65)newPage()}
+ function paragraph(text,{size=10,indent=0,gap=5,bold=false,color='normal'}={}){let lim=size===10?91:88;if(bold)lim-=8;for(const line of pdfWrap(text,lim)){room(size+7);commands.push(color==='accent'?'0.06 0.49 0.44 rg\n':color==='muted'?'0.35 0.44 0.46 rg\n':'0.14 0.21 0.24 rg\n');commands.push(writeAt(line,47+indent,y,size,bold));y-=size+5;}y-=gap}
+ function heading(text){room(40);y-=7;paragraph(text,{size:14,bold:true,color:'accent',gap:12})}
+ function bullets(label,arr){paragraph(label,{size:10,bold:true,gap:5});for(const item of arr||[])paragraph('- '+item,{size:9,indent:8,gap:3})}
+ function pageBreak(){if(commands.length)newPage()}
+ newPage();
+ paragraph('PERSOONLIJK PI-CEREMONIE DRAAIBOEK',{size:17,bold:true,color:'accent',gap:14});
+ paragraph('Rol: '+ROLE_NAMES[state.role],{size:12,bold:true,gap:6});
+ paragraph('Planning Interval: '+(state.piName||'Niet opgegeven'),{size:11,gap:9});
+ paragraph('Geselecteerde ceremonies: '+selected.length,{size:10,gap:7});
+ paragraph('Dit draaiboek is een planningshulpmiddel. Controleer lokale ART-afspraken en bevestig verantwoordelijkheden met betrokkenen. Afspraken, deelnemers en uitnodigingen worden niet automatisch verwerkt.',{size:9,color:'muted',gap:14});
+ heading('Jouw verantwoordelijkheden in het kort');
+ paragraph('In de onderstaande ceremonies is jouw specifieke verantwoordelijkheid afgeleid van de ingestelde Planner, Facilitator en Inhoudelijk eigenaar. Wanneer jouw rol niet een van deze functies vervult, ben je als deelnemer betrokken. Pas dit waar nodig aan voor jullie ART.',{size:10,gap:15});
+ for(const c of selected){
+  const isPlanner=c.planner===state.role,isHost=c.host===state.role,isOwner=c.owner===state.role;
+  const duties=[];
+  if(isPlanner)duties.push('Plannen: datum, tijd, deelnemers, afstemming en praktische organisatie verzorgen.');
+  if(isHost)duties.push('Faciliteren: agenda begeleiden, timebox bewaken, besluiten en acties expliciteren.');
+  if(isOwner)duties.push('Inhoud: input voorbereiden, inhoudelijke afstemming en opvolging van resultaten.');
+  if(!duties.length)duties.push('Deelnemer: benodigde input voorbereiden, actief bijdragen en eigen acties opvolgen.');
+  const myEvents=all.filter(e=>e.ceremonyId===c.id),dates=myEvents.map(e=>format(e.date)+' '+e.time);
+  if(y<170)newPage();
+  heading(c.name);
+  paragraph('Type: '+c.group+'   |   Voorgestelde tijd: '+(config(c).time||'09:00')+'   |   Duur: '+config(c).duration+' min',{size:9,color:'muted',gap:7});
+  paragraph('Jouw rol: '+(isPlanner||isHost||isOwner?[isPlanner?'Planner':null,isHost?'Facilitator':null,isOwner?'Inhoudelijk eigenaar':null].filter(Boolean).join(' / '):'Deelnemer'),{size:10,bold:true,gap:6});
+  bullets('Wat jij doet',duties);
+  paragraph('Rolverdeling: Planner '+(ROLE_NAMES[c.planner]||c.planner)+' | Facilitator '+(ROLE_NAMES[c.host]||c.host)+' | Inhoud '+(ROLE_NAMES[c.owner]||c.owner),{size:9,color:'muted',gap:6});
+  paragraph('Doel: '+c.description,{size:9,gap:8});
+  bullets('Voorbereiding',c.prepare);
+  bullets('Agenda',c.agenda);
+  paragraph('Beoogde output: '+c.output,{size:9,gap:7});
+  paragraph('Geplande momenten: '+(dates.length?dates.slice(0,14).join(' | ')+(dates.length>14?' | plus '+(dates.length-14)+' extra':''):'Nog niet ingepland'),{size:9,color:'muted',gap:12});
+ }
+ if(commands.length)pages.push(commands.join(''));
+ const objs=[];const push=o=>(objs.push(o),objs.length);const catalog=push(''),pagesRef=push('');
+ const font1=push('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>');
+ const font2=push('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>');
+ const ids=[];
+ for(const page of pages){const len=page.length;const stream=push(`<< /Length ${len} >>\nstream\n${page}endstream`);ids.push(push(`<< /Type /Page /Parent ${pagesRef} 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 ${font1} 0 R /F2 ${font2} 0 R >> >> /Contents ${stream} 0 R >>`))}
+ objs[pagesRef-1]=`<< /Type /Pages /Kids [${ids.map(i=>i+' 0 R').join(' ')}] /Count ${ids.length} >>`;
+ objs[catalog-1]=`<< /Type /Catalog /Pages ${pagesRef} 0 R >>`;
+ let output='%PDF-1.4\n',offset=[0];
+ for(let i=0;i<objs.length;i++){offset.push(output.length);output+=`${i+1} 0 obj\n${objs[i]}\nendobj\n`}
+ const xref=output.length;output+=`xref\n0 ${objs.length+1}\n0000000000 65535 f \n`;
+ for(let i=1;i<offset.length;i++)output+=String(offset[i]).padStart(10,'0')+' 00000 n \n';
+ output+=`trailer\n<< /Size ${objs.length+1} /Root ${catalog} 0 R >>\nstartxref\n${xref}\n%%EOF\n`;
+ return new Blob([new TextEncoder().encode(output)],{type:'application/pdf'});
+}
+function savePdf(){if(!state.role||!allSelected().length){toast('Kies eerst jouw rol en ten minste een ceremonie.');return}const blob=buildRolePdf();const link=document.createElement('a'),url=URL.createObjectURL(blob);link.href=url;link.download=`safe-agile-forge-${slug(state.piName)}-${state.role.toLowerCase()}-draaiboek.pdf`;document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),5000);toast('PDF-draaiboek gedownload.')}
+
 function download(name,content,type){const blob=new Blob([type.startsWith('text/calendar')?'':'\ufeff',content],{type});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000)}
 function toast(s){const x=$('toast');x.textContent=s;x.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>x.classList.remove('show'),3300)}
 function slug(s){return String(s).toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,60)||'planning-interval'}
@@ -392,7 +510,7 @@ $('autoCascade').addEventListener('change',e=>{
   renderAll();toast(state.autoCascade?'Iteraties worden automatisch doorgerekend.':'Automatisch doortellen uitgeschakeld.');
 });
 $('piName').addEventListener('input',e=>{state.piName=e.target.value;saveState();refresh()});for(const id of ['currentPiPlanning','nextPiPlanning'])$(id).addEventListener('change',e=>{state[id]=e.target.value;saveState();refresh()});
-document.querySelectorAll('[data-role]').forEach(el=>el.addEventListener('click',()=>{state.role=el.dataset.role;presetPick();renderAll();document.getElementById('frameworkHeading')?.scrollIntoView({behavior:'smooth',block:'start'})}));
+document.querySelectorAll('[data-role]').forEach(el=>el.addEventListener('click',()=>{state.role=el.dataset.role;presetPick();renderAll();document.getElementById('workspaceLead')?.scrollIntoView({behavior:'smooth',block:'start'})}));
 $('relevantOnly').addEventListener('click',()=>{state.showRelevantOnly=!state.showRelevantOnly;renderRoles();renderLibrary();saveState()});
 $('search').addEventListener('input',renderLibrary);
 $('selectRelevant').addEventListener('click',()=>{presetPick();renderAll()});
@@ -403,6 +521,7 @@ $('autoDates').addEventListener('click',()=>{let cur='2026-11-02';const dev=stat
 $('saveConfig').addEventListener('click',()=>download(`safe-agile-forge-${slug(state.piName)}.json`,JSON.stringify({...state,version:1},null,2),'application/json;charset=utf-8'));
 $('importConfig').addEventListener('click',()=>$('importFile').click());
 $('importFile').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const data=JSON.parse(await file.text());if(!Array.isArray(data.iterations)||!data.role||!data.picked||typeof data.picked!=='object')throw new Error('Ongeldig bestand');state={...defaultState(),...data};$('piName').value=state.piName;$('currentPiPlanning').value=state.currentPiPlanning||'';$('nextPiPlanning').value=state.nextPiPlanning||'';renderAll();toast('PI-configuratie geladen.')}catch(err){toast('Kon dit JSON-bestand niet laden.')}e.target.value=''});
+$('exportPdf').addEventListener('click',savePdf);
 $('exportIcs').addEventListener('click',()=>{const errs=validate();const results=occurrences();if(errs.length||!results.events.length){toast('Controleer de datums en je selectie.');return}if(results.missing.length&&!window.confirm(`${results.missing.length} geselecteerde ceremonie(s) hebben geen datum en worden overgeslagen. Toch exporteren?`))return;download(`safe-agile-forge-${slug(state.piName)}-${state.role.toLowerCase()}.ics`,calendarICS(results.events),'text/calendar;charset=utf-8');toast(`${results.events.length} afspraken geëxporteerd voor ${state.role}.`)});
 renderAll();
 document.querySelectorAll('[data-target-group]').forEach(el=>el.addEventListener('click',()=>{ const group=el.dataset.targetGroup; if(state.showRelevantOnly){state.showRelevantOnly=false;renderRoles();renderLibrary()} if($('search').value){$('search').value='';renderLibrary()} const h=[...document.querySelectorAll('.group-title')].find(e=>e.textContent.includes(group)); if(h)h.scrollIntoView({behavior:'smooth',block:'center'}); else $('ceremonyPanel').scrollIntoView({behavior:'smooth',block:'start'}); }));
