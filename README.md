@@ -74,3 +74,7 @@ The app is a local browser-based calendar proposal tool. It does not connect to 
 ## Delivery status
 
 Major methodological P0 components have been added, but the original ~80-item wish list is **not fully complete**. See [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) for delivered, partial and backend-dependent capabilities. Implemented items have passed isolated JavaScript and export tests; a full browser and cross-device acceptance test is still needed.
+
+### Regression smoke tests
+
+The repo now contains `tests/smoke.mjs` and `.github/workflows/smoke-tests.yml`. Pushing a commit or opening a pull request runs Node-based checks for JavaScript syntax, the PI Planner's 20 tabs, the 20-sheet XLSX and a PDF payload. This workflow does **not** deploy the site, access hosting secrets, or verify a real browser UI.
