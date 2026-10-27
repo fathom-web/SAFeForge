@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10243c"><title>Aanmelden PI Planning · SAFe Agile Forge</title>
+<link rel="icon" href="forge-mark.svg" type="image/svg+xml">
+<style>
+*{box-sizing:border-box}body{font:14px/1.55 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:#f3f8f6;color:#1b4246;margin:0;min-height:100vh}
+.top{height:5px;background:linear-gradient(90deg,#119c8d,#7cedd5,#a7bfeb)}.shell{width:min(680px,calc(100% - 28px));margin:25px auto 65px}.brand{display:flex;align-items:center;gap:9px;text-decoration:none;color:#144c51;font-weight:900;font-size:15px;margin:0 0 24px}.brand img{width:38px;height:38px}
+.card{border:1px solid #d2e8df;border-radius:23px;background:#fff;padding:32px;box-shadow:0 20px 70px #204b3812}
+.kicker{color:#158b7e;font-size:10px;letter-spacing:.2em;font-weight:900}h1{font-size:clamp(30px,5vw,44px);letter-spacing:-.05em;line-height:1.15;margin:10px 0;color:#173d44}h2{font-size:19px;margin:25px 0 12px;letter-spacing:-.025em}p{font-size:13px;line-height:1.7;color:#65807e}.notice{background:#ecf8f3;padding:14px;border:1px solid #cae7db;border-radius:12px;color:#47796f;font-size:12px;margin:17px 0}.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:18px 0}.fact{border:1px solid #d8e9e2;border-radius:11px;padding:12px}.fact strong{display:block;font-size:12px}.fact small{display:block;color:#6b827e;font-size:10px;margin-bottom:5px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.field{display:grid;gap:6px;margin-bottom:14px}.field label,.field>span{font-weight:780;font-size:12px;color:#416967}
+input,select{width:100%;min-width:0;background:#fff;border:1px solid #c8dcd3;border-radius:11px;padding:12px 13px;color:#1b4246;font:inherit}input:focus,select:focus{outline:3px solid #9cdbc987}input[type=checkbox]{width:auto}.days{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.day{border:1px solid #d6e9df;background:#f9fcfa;border-radius:12px;padding:14px}
+.day h3{margin:0 0 11px;font-size:13px}.check{display:flex;gap:8px;align-items:center;font-size:12px;font-weight:700;margin-bottom:10px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:23px 0 0}.btn{border:1px solid #7aaea2;padding:13px 12px;border-radius:11px;background:#ecf7f1;color:#176e65;font-weight:850;font-size:12px;cursor:pointer;text-align:center}.btn.primary{background:linear-gradient(100deg,#168e7f,#15596b);color:white;border:0}.btn:hover{filter:brightness(.98)}.error{color:#a84545;font-size:12px;font-weight:750;min-height:18px}.hint{font-size:11px;color:#859a95;margin-top:17px}
+@media(max-width:570px){.card{padding:21px;border-radius:18px}.grid,.days,.actions,.facts{grid-template-columns:1fr}h1{font-size:31px}}
+</style></head><body><div class="top"></div><main class="shell"><a class="brand" href="./"><img src="./forge-mark.svg" alt=""><span>SAFe AGILE FORGE · PI PLANNER</span></a>
+<div class="card"><div class="kicker">EVENT REGISTRATION</div><h1>Jouw aanmelding voor<br>de PI Planning.</h1>
+<p>Geef aan op welke dagen je aanwezig bent en of je lunch wilt. De organisator ontvangt jouw reactie pas wanneer je zelf een e-mail verstuurt of het reactie-CSV-bestand terugstuurt.</p>
+<div id="eventDetails"></div>
+<form id="form"><h2>Jouw gegevens</h2><div class="grid"><div class="field"><label for="name">Naam *</label><input id="name" name="name" required maxlength="100" autocomplete="name"></div><div class="field"><label for="email">E-mailadres *</label><input id="email" name="email" required type="email" maxlength="150" autocomplete="email"></div><div class="field"><label for="role">Functie / rol</label><input id="role" name="role" maxlength="100" placeholder="Bijv. PO, RTE, BO"></div><div class="field"><label for="art">ART</label><select id="art"><option value="">Selecteer ART</option></select></div><div class="field"><label for="team">Team</label><select id="team"><option value="">Geen / overig</option></select></div><div class="field"><label for="status">Aanmelding *</label><select id="status"><option value="yes">Aanwezig</option><option value="maybe">Misschien</option><option value="no">Afwezig</option></select></div></div>
+<h2>Aanwezigheid & lunch</h2><div class="days">
+<div class="day"><h3 id="day1Title">Dag 1</h3><label class="check"><input type="checkbox" id="day1" checked> Ik ben aanwezig</label><label class="field"><span>Lunchvoorkeur</span><select id="meal1"><option value="regular">Standaard</option><option value="veggie">Vegetarisch</option><option value="vegan">Vegan</option><option value="other">Anders, afstemmen met organisatie</option><option value="none">Geen lunch</option></select></label></div>
+<div class="day"><h3 id="day2Title">Dag 2</h3><label class="check"><input type="checkbox" id="day2" checked> Ik ben aanwezig</label><label class="field"><span>Lunchvoorkeur</span><select id="meal2"><option value="regular">Standaard</option><option value="veggie">Vegetarisch</option><option value="vegan">Vegan</option><option value="other">Anders, afstemmen met organisatie</option><option value="none">Geen lunch</option></select></label></div>
+</div><p class="hint">Geef hier geen medische informatie, dieetdiagnoses of operationeel vertrouwelijke gegevens op. Voor bijzondere praktische wensen kun je rechtstreeks contact opnemen met de organisatie.</p>
+<div class="actions"><button type="submit" class="btn primary">Maak e-mailreactie</button><button type="button" id="download" class="btn">Download reactie (.csv)</button></div><div id="error" class="error" role="alert"></div>
+</form>
+<div class="notice"><strong>Privacy & werking</strong><div>Dit formulier heeft geen server of account. Het legt je reactie niet automatisch vast. Je gegevens worden pas gedeeld wanneer je zelf een e-mail verstuurt of het bestand aan de organisator toestuurt.</div></div>
+</div></main>
+<script>
+'use strict';
+const $=id=>document.getElementById(id),esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let info=null;
+try{const raw=location.hash.startsWith('#event=')?location.hash.slice(7):'';const parsed=JSON.parse(decodeURIComponent(raw));if(!parsed||!Array.isArray(parsed.days)||!Array.isArray(parsed.arts))throw Error('invalid');info=parsed;}catch(e){$('eventDetails').innerHTML='<div class="notice">Geen geldig evenement gevonden. Vraag de organisator om de juiste RSVP-link.</div>';$('form').style.display='none';}
+if(info){
+ $('eventDetails').innerHTML='<div class="facts"><div class="fact"><small>Evenement</small><strong>'+esc(info.eventName||'PI Planning')+'</strong></div><div class="fact"><small>PI</small><strong>'+esc(info.piName||'')+'</strong></div><div class="fact"><small>Dag 1</small><strong>'+esc(info.days[0]||'Volgt')+'</strong></div><div class="fact"><small>Dag 2</small><strong>'+esc(info.days[1]||'Volgt')+'</strong></div></div><div class="notice">'+esc(info.venue||'Locatie volgt')+' · '+esc(info.format||'fysiek')+'</div>';
+ $('day1Title').textContent='Dag 1 · '+(info.days[0]||'Datum volgt');$('day2Title').textContent='Dag 2 · '+(info.days[1]||'Datum volgt');
+ $('art').innerHTML='<option value="">Geen / overig</option>'+info.arts.map(a=>'<option value="'+esc(a.id)+'">'+esc(a.name)+'</option>').join('');
+ $('art').addEventListener('change',()=>{const art=info.arts.find(a=>a.id===$('art').value);$('team').innerHTML='<option value="">Geen / overig</option>'+(art?art.teams.map(t=>'<option value="'+esc(t.id)+'">'+esc(t.name)+'</option>').join(''):'')});
+}
+function readData(){if(!$('form').reportValidity())return null;
+ const status=$('status').value,day1=$('day1').checked&&status!=='no',day2=$('day2').checked&&status!=='no';
+ const art=info.arts.find(a=>a.id===$('art').value),team=art?.teams.find(t=>t.id===$('team').value);
+ return {name:$('name').value.trim(),email:$('email').value.trim(),role:$('role').value.trim(),art:art?.name||'',team:team?.name||'',status,day1:day1?'ja':'nee',day2:day2?'ja':'nee',lunch1:day1?$('meal1').value:'none',lunch2:day2?$('meal2').value:'none'};
+}
+function csvQuote(v){return '"'+String(v??'').replace(/"/g,'""')+'"'}
+function lineCSV(r){const heads=['naam','email','rol','art','team','rsvp','dag1','dag2','lunch1','lunch2'];return '\uFEFF'+heads.map(csvQuote).join(';')+'\r\n'+heads.map(k=>csvQuote(r[k])).join(';')+'\r\n'}
+function downloadCSV(r){const b=new Blob([lineCSV(r)],{type:'text/csv;charset=utf-8'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='rsvp-'+r.name.toLowerCase().replace(/[^a-z0-9]+/g,'-')+'.csv';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),3000);$('error').textContent='Stuur het gedownloade CSV-bestand naar de organisator. Zonder verzending wordt je reactie niet geregistreerd.'}
+$('download').addEventListener('click',()=>{if(!info)return;const r=readData();if(r)downloadCSV(r)});
+$('form').addEventListener('submit',e=>{e.preventDefault();if(!info)return;const r=readData();if(!r)return;if(!info.email){$('error').textContent='Er is geen contactadres opgegeven. Download het CSV-bestand en stuur dit naar de organisator.';return}
+ const subject='RSVP '+(info.piName||'')+' - '+r.name;
+ const message='RSVP reactie voor '+(info.eventName||'PI Planning')+'\n\n'+
+ 'Naam: '+r.name+'\nE-mail: '+r.email+'\nFunctie: '+r.role+'\nART: '+r.art+'\nTeam: '+r.team+'\nRSVP: '+r.status+'\nDag 1: '+r.day1+'\nDag 2: '+r.day2+'\nLunch dag 1: '+r.lunch1+'\nLunch dag 2: '+r.lunch2+
+ '\n\nDit is een handmatige e-mailreactie uit SAFe Agile Forge. De organisator verwerkt de gegevens in het deelnemersoverzicht.';
+ $('error').textContent='Controleer je e-mailconcept en druk zelf op Verzenden. Pas daarna heeft de organisator je reactie.';
+ location.href='mailto:'+encodeURIComponent(info.email)+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(message);
+});
+</script></body></html>
