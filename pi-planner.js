@@ -45,11 +45,11 @@ const AGENDA=[
 [1,'14:40','15:15','Planning Retrospective','Plenair','RTE'],
 [1,'15:15','15:30','Afsluiting & vervolgstappen','Plenair','Organisatie']
 ];
-function defaultTeam(n){return {id:uid(),name:'Team '+n,members:8}}
+function defaultTeam(n){return {id:uid(),name:'Team '+n,members:8,room:'',sm:'',po:''}}
 function defaultArt(n){return {id:uid(),name:'ART '+n,teams:Array.from({length:5},(_,i)=>defaultTeam(i+1))}}
 function fresh(){return {
  version:1,ready:false,piName:'PI 2027.1',eventName:'PI Planning',
- arts:[defaultArt(1)],days:['',''],format:'onsite',venue:'',address:'',plenairRooms:1,breakoutRooms:6,organizer:'',email:'',
+ arts:[defaultArt(1)],days:['',''],format:'onsite',planningMode:'joint',venue:'',address:'',plenairRooms:1,breakoutRooms:5,roomsCustomized:false,organizer:'',email:'',
  extraParticipants:10,businessOwners:2,architects:1,facilitators:1,techLead:'',sponsor:'',catering:true,
  notes:'',agenda:AGENDA.map(a=>({id:uid(),day:a[0],start:a[1],end:a[2],title:a[3],location:a[4],owner:a[5]})),
  people:[],checks:CHECKS.map(name=>({id:uid(),name,done:false}))
@@ -65,8 +65,8 @@ function num(label,key,min=0,maxN=500){return '<label class="field"><span>'+esc(
 function option(v,k,label){return '<option value="'+k+'" '+(v===k?'selected':'')+'>'+esc(label)+'</option>'}
 function select(label,key,opts){return '<label class="field"><span>'+esc(label)+'</span><select data-field="'+key+'">'+opts.map(p=>option(state[key],p[0],p[1])).join('')+'</select></label>'}
 const text=(tag,txt,cl)=>'<'+tag+' class="'+(cl||'')+'">'+esc(txt)+'</'+tag+'>';
-function setArtCount(n){n=max(n,1,15);while(state.arts.length<n)state.arts.push(defaultArt(state.arts.length+1));state.arts=state.arts.slice(0,n);save()}
-function setTeamCount(artIdx,n){const art=state.arts[artIdx];if(!art)return;n=max(n,1,30);while(art.teams.length<n)art.teams.push(defaultTeam(art.teams.length+1));art.teams=art.teams.slice(0,n);save()}
+function setArtCount(n){n=max(n,1,15);while(state.arts.length<n)state.arts.push(defaultArt(state.arts.length+1));state.arts=state.arts.slice(0,n);if(!state.roomsCustomized)state.breakoutRooms=scaleCounts().teams;save()}
+function setTeamCount(artIdx,n){const art=state.arts[artIdx];if(!art)return;n=max(n,1,30);while(art.teams.length<n)art.teams.push(defaultTeam(art.teams.length+1));art.teams=art.teams.slice(0,n);if(!state.roomsCustomized)state.breakoutRooms=scaleCounts().teams;save()}
 function scaleCounts(){const teams=state.arts.reduce((n,a)=>n+a.teams.length,0),members=state.arts.reduce((n,a)=>n+a.teams.reduce((m,t)=>m+digit(t.members),0),0),others=digit(state.extraParticipants),people=members+others;return {arts:state.arts.length,teams,members,others,people,rooms:teams+1}}
 function renderWizard(){
  $('dashboard').classList.remove('on');$('wizard').classList.remove('off');
@@ -91,7 +91,7 @@ function stepEvent(){const c=scaleCounts();
  '<div class="formgrid">'+fld('PI-naam','piName')+fld('Naam evenement','eventName')+
  '<label class="field"><span>Dag 1 · datum</span><input type="date" data-day="0" value="'+esc(state.days[0])+'"></label>'+
  '<label class="field"><span>Dag 2 · datum</span><input type="date" data-day="1" value="'+esc(state.days[1])+'"><small>Wordt standaard de volgende kalenderdag; kies zelf een andere datum.</small></label>'+
- select('Deelnamevorm','format',[['onsite','Fysiek'],['hybrid','Hybride'],['online','Online']])+fld('Locatie / gebouw','venue','text','Bijv. vergadercentrum')+
+ select('Deelnamevorm','format',[['onsite','Fysiek'],['hybrid','Hybride'],['online','Online']])+select('ART-indeling','planningMode',[['joint','Gezamenlijke PI Planning'],['parallel','Parallelle ART-planningen op dezelfde dagen']])+fld('Locatie / gebouw','venue','text','Bijv. vergadercentrum')+
  fld('Adres / toegangsinformatie (niet vertrouwelijk)','address')+
  num('Breakout-ruimtes / teamtafels', 'breakoutRooms',0,200)+
  num('Plenaire ruimtes','plenairRooms',0,20)+'</div>'+
@@ -125,7 +125,7 @@ function renderDashboard(){
  $('eventSubheading').textContent=(state.piName||'PI')+' · '+when(state.days[0])+' & '+when(state.days[1]);
  $('metrics').innerHTML=[['ARTs',c.arts],['Teams',c.teams],['Verwacht',c.people],['Aangemeld',c.yes],['Checks gereed',c.done+'/'+state.checks.length]].map(a=>'<div class="metric"><b>'+a[1]+'</b><small>'+a[0]+'</small></div>').join('');
  document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
- $('view').innerHTML=tab==='overview'?viewOverview():tab==='agenda'?viewAgenda():tab==='people'?viewPeople():tab==='catering'?viewCatering():tab==='invites'?viewInvites():viewChecklist();
+ $('view').innerHTML=tab==='overview'?viewOverview():tab==='agenda'?viewAgenda():tab==='rooms'?viewRooms():tab==='people'?viewPeople():tab==='catering'?viewCatering():tab==='invites'?viewInvites():viewChecklist();
 }
 function paneHead(kicker,title,desc){return '<div class="kicker">'+kicker+'</div><h2>'+title+'</h2><p class="sub">'+desc+'</p>'}
 function viewOverview(){
@@ -138,7 +138,7 @@ function viewOverview(){
  if(state.breakoutRooms<c.teams)missing.push('Controleer of er genoeg breakout-ruimtes of teamtafels zijn');
  return '<div class="layout"><section class="panel">'+paneHead('EVENT SUMMARY','Je PI Planning in één overzicht','De basis voor organisatie, planning en logistiek.')+
  '<div class="formgrid">'+[
- ['PI',state.piName],['ARTs',c.arts+''],['Teams',c.teams+''],['Verwacht aantal mensen','ca. '+c.people],['Dag 1',when(state.days[0])],['Dag 2',when(state.days[1])],['Deelnamevorm',{onsite:'Fysiek',hybrid:'Hybride',online:'Online'}[state.format]],['Locatie',state.venue||'Nog open'],['Breakouts',state.breakoutRooms+' plekken'],['Plenair',state.plenairRooms+' ruimte(s)'],['Eventorganisatie',state.organizer||'Nog open'],['Contactadres',state.email||'Nog open']
+ ['PI',state.piName],['ARTs',c.arts+''],['Teams',c.teams+''],['Verwacht aantal mensen','ca. '+c.people],['Dag 1',when(state.days[0])],['Dag 2',when(state.days[1])],['Deelnamevorm',{onsite:'Fysiek',hybrid:'Hybride',online:'Online'}[state.format]],['Locatie',state.venue||'Nog open'],['Breakouts',state.breakoutRooms+' plekken'],['ART-planning',state.planningMode==='parallel'?'Parallel per ART':'Gezamenlijk'],['Plenair',state.plenairRooms+' ruimte(s)'],['Eventorganisatie',state.organizer||'Nog open'],['Contactadres',state.email||'Nog open']
  ].map(a=>'<div class="entry" style="margin:0"><small class="hint">'+esc(a[0])+'</small><div><strong>'+esc(a[1])+'</strong></div></div>').join('')+'</div><div class="sectiondivider"></div><div class="buttonline"><button class="btn primary" data-tab="agenda">Programma bewerken</button><button class="btn" data-tab="people">Aanmeldingen beheren</button><button class="btn" data-tab="invites">Uitnodiging maken</button></div></section>'+
  '<aside class="panel aside"><h3>Wat vraagt nog aandacht?</h3>'+(!missing.length?'<p class="smallprint">Basisinstellingen zien er compleet uit. Check nu je programma en deelnemers.</p>':'<ul>'+missing.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>')+
  '<div class="sectiondivider"></div><h3>ARTs & teams</h3>'+state.arts.map(a=>'<p class="smallprint"><strong>'+esc(a.name)+'</strong><br>'+a.teams.length+' teams · '+a.teams.reduce((n,t)=>n+digit(t.members),0)+' mensen (inschatting)</p>').join('')+
@@ -162,6 +162,25 @@ function agendaForm(){const x=editing==='new'?{id:'',day:0,start:'09:00',end:'10
  '<label class="field"><span>Spreker / facilitator</span><input id="agendaOwner" value="'+esc(x.owner)+'"></label></div>'+
  '<div class="actions"><button class="btn" data-action="cancelAgenda">Annuleren</button><button class="btn primary" data-action="saveAgenda">Opslaan</button></div></div>';
 }
+
+function viewRooms(){
+ const c=scaleCounts();let index=0;
+ const groups=state.arts.map((art,ai)=>{
+  const body=art.teams.map((t,ti)=>{
+   const suggested=t.room||'Breakout '+(++index);
+   if(t.room)index++;
+   return '<tr><td><strong>'+esc(t.name)+'</strong><br><small class="hint">'+digit(t.members)+' personen</small></td>'+
+    '<td><input data-team-room="'+ai+':'+ti+'" value="'+esc(suggested)+'" placeholder="Bijv. zaal B2"></td>'+
+    '<td><input data-team-sm="'+ai+':'+ti+'" value="'+esc(t.sm||'')+'" placeholder="Naam Scrum Master"></td>'+
+    '<td><input data-team-po="'+ai+':'+ti+'" value="'+esc(t.po||'')+'" placeholder="Naam Product Owner"></td></tr>';
+  }).join('');
+  return '<div class="agenda-day"><h3>'+esc(art.name)+' · '+art.teams.length+' teams</h3><div class="tablewrap"><table style="min-width:650px"><thead><tr><th>Team</th><th>Breakoutlocatie</th><th>Scrum Master</th><th>Product Owner</th></tr></thead><tbody>'+body+'</tbody></table></div></div>';
+ }).join('');
+ return '<section class="panel">'+paneHead('TEAM ALLOCATION','Ruimtes & teambegeleiding','Koppel iedere ART en ieder team aan een breakout-ruimte of tafel, Scrum Master en Product Owner.')+
+ '<div class="introbox"><strong>Ruimtebehoefte:</strong> '+c.teams+' teams · '+state.breakoutRooms+' breakout-ruimtes of tafels beschikbaar · '+state.plenairRooms+' plenaire ruimte(s). Deelruimtes zijn mogelijk, maar controleer capaciteit en geluidsbelasting.</div>'+
+ groups+'<p class="smallprint">Vul hier uitsluitend praktische locatie-informatie in. De indeling wordt lokaal opgeslagen en meegenomen in de JSON-back-up.</p></section>';
+}
+
 function artSelect(index){return '<select data-person-art="'+index+'"><option value="">Selecteer ART</option>'+state.arts.map(a=>'<option value="'+esc(a.id)+'" '+(state.people[index].artId===a.id?'selected':'')+'>'+esc(a.name)+'</option>').join('')+'</select>'}
 function teamSelect(index){const p=state.people[index],art=state.arts.find(a=>a.id===p.artId);return '<select data-person-team="'+index+'"><option value="">Geen / extern</option>'+(art?art.teams.map(t=>'<option value="'+esc(t.id)+'" '+(p.teamId===t.id?'selected':'')+'>'+esc(t.name)+'</option>').join(''):'')+'</select>'}
 function viewPeople(){return '<section class="panel">'+
@@ -294,6 +313,12 @@ function onViewClick(e){
 function onViewChange(e){
  const el=e.target;
  function set(key,index,property){if(state.people[index]){state.people[index][key]=property;save();renderDashboard()}}
+ if(el.dataset.teamRoom!==undefined||el.dataset.teamSm!==undefined||el.dataset.teamPo!==undefined){
+    const token=el.dataset.teamRoom??el.dataset.teamSm??el.dataset.teamPo;
+    const [a,t]=token.split(':').map(Number),team=state.arts[a]?.teams[t];
+    if(team){const key=el.dataset.teamRoom!==undefined?'room':el.dataset.teamSm!==undefined?'sm':'po';team[key]=el.value.trim();save();toast('Teamindeling opgeslagen.')}
+    return;
+ }
  if(el.dataset.personArt!==undefined){const i=+el.dataset.personArt;const p=state.people[i];if(p){p.artId=el.value;p.teamId='';save();renderDashboard()}return}
  if(el.dataset.personTeam!==undefined){set('teamId',+el.dataset.personTeam,el.value);return}
  if(el.dataset.personStatus!==undefined){set('status',+el.dataset.personStatus,el.value);return}
@@ -315,7 +340,7 @@ function wizardChange(e){
  if(d.teamMembers!==undefined){const [a,t]=d.teamMembers.split(':').map(Number);if(state.arts[a]?.teams[t])state.arts[a].teams[t].members=max(digit(el.value,1),1,60);save();return}
  if(d.day!==undefined){const i=+d.day;state.days[i]=el.value;if(i===0&&!state.days[1])state.days[1]=dateAdd(el.value,1);save();if(i===0)renderWizard();return}
  if(d.checkCatering!==undefined){state.catering=el.checked;save();return}
- if(d.num!==undefined){state[d.num]=digit(el.value);save();return}
+ if(d.num!==undefined){state[d.num]=digit(el.value);if(d.num==='breakoutRooms')state.roomsCustomized=true;save();return}
  if(d.field!==undefined){state[d.field]=el.value;save();return}
 }
 $('wizardContents').addEventListener('change',wizardChange);
