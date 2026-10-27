@@ -162,7 +162,7 @@ function pdfBuild(){
   title('16 – Confidence Votes, besluiten en Plan Rework');
   row('Herplanning',state.method.rework||'');row('Plan vastgesteld',state.method.committedAt||'Nog niet');
   for(const x of state.method.votes||[]){const t=typeof mfTeam==='function'?mfTeam(x.teamId):null;write((t?.team.name||'')+': '+x.score+'/5 '+x.note,9,false,5,4)}
-  for(const x of state.method.artVotes||[])write('ART '+(artById?state.arts.find(a=>a.id===x.artId)?.name||'':'')+': '+x.score+'/5 '+x.note,9,false,5,4);
+  for(const x of state.method.artVotes||[])write('ART '+(state.arts.find(a=>a.id===x.artId)?.name||'')+': '+x.score+'/5 '+x.note,9,false,5,4);
   for(const x of state.method.decisions||[])write(x.title+' | '+x.owner+' | '+x.status,9,false,5,4);
  }
  if(ops.length)pages.push(ops.join(''));
