@@ -87,11 +87,20 @@ function prepareWorkbook(){
  make('Conflicten',['Ernst','Signaal','Toelichting'],issues.map(i=>[i.level,i.title,i.desc])),
  make('Afhankelijkheden',['Van ART','Naar ART','Afhankelijkheid','Eigenaar','Status'],dependencies),
  make('Evaluatie',['Onderwerp','Score (1-5)','Toelichting','Eigenaar','Status'],feedback),
- make('Checklist',['Actie','Status'],checklist)];
+ make('Checklist',['Actie','Status'],checklist),
+ ...(state.method?[
+  make('SAFe Readiness',['Categorie','Controlepunt','Eigenaar','Status','Toelichting'],state.method.readiness.map(x=>[x.group,x.title,x.owner,x.status,x.note])),
+  make('Teamcapaciteit',['ART','Team','Iteratie','Beschikbaar','Gepland','Belasting %'],state.method.capacity.map(x=>{const t=mfTeam(x.teamId);return [t?.art.name||'',t?.team.name||'',x.iteration,+x.available||0,+x.planned||0,x.available?Math.round((+x.planned||0)/x.available*100):0]})),
+  make('PI Objectives',['ART','Team','PI Objective','Commitment','Planned BV','Actual BV','Status'],state.method.objectives.map(x=>{const t=mfTeam(x.teamId);return [t?.art.name||'',t?.team.name||'',x.title,x.commitment,+x.plannedBV||0,+x.actualBV||0,x.status]})),
+  make('ART Planning Board',['ART','Team','Iteratie','Feature / Enabler','Type','Status'],state.method.features.map(x=>{const t=mfTeam(x.teamId);return [t?.art.name||'',t?.team.name||'',x.iteration,x.title,x.type,x.status]})),
+  make('ROAM Risicos',['ART','Risico','ROAM','Eigenaar','Maatregel'],state.method.risks.map(x=>[artById(x.artId)?.name||'',x.title,x.roam,x.owner,x.action])),
+  make('Confidence Votes',['ART','Team','Confidence 1-5','Toelichting'],state.method.votes.map(x=>{const t=mfTeam(x.teamId);return [t?.art.name||'',t?.team.name||'',x.score,x.note]})),
+  make('Planningbesluiten',['Besluit','Eigenaar','Status'],state.method.decisions.map(x=>[x.title,x.owner,x.status]))
+ ]:[])];
 }
 function saveEventBlob(blob,filename){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),5000);}
 function exportEventExcel(){
- try{const file=workbookXlsx(prepareWorkbook());saveEventBlob(file,'pi-planner-'+(state.piName||'planning').replace(/[^a-z0-9-]/gi,'-')+'.xlsx');toast('Excel-werkmap gedownload (12 tabbladen).')}
+ try{const file=workbookXlsx(prepareWorkbook());saveEventBlob(file,'pi-planner-'+(state.piName||'planning').replace(/[^a-z0-9-]/gi,'-')+'.xlsx');toast('Excel-werkmap met '+prepareWorkbook().length+' tabbladen gedownload.')}
  catch(e){toast('Excel-export mislukt: '+e.message);}
 }
 /* Local PDF generator uses PDF 1.4 Type1 fonts, ASCII-safe content and automatic page breaks. */
@@ -137,6 +146,23 @@ function pdfBuild(){
  title('10 – Evaluatie en vervolgacties');
  if(!state.feedback.length)write('Nog geen evaluatiepunten vastgelegd.',9);
  else for(const f of state.feedback)write(f.title+' | score '+(f.score||'nvt')+'/5 | '+f.status+' | eigenaar '+(f.owner||'open')+' | '+(f.comment||''),9,false,5,6);
+
+ if(state.method){
+  title('11 – SAFe Readiness');
+  for(const x of state.method.readiness||[])write('['+x.status+'] '+x.group+' / '+x.title+' | '+x.owner,9,false,5,4);
+  title('12 – Capaciteit per team en iteratie');
+  for(const x of state.method.capacity||[]){const t=typeof mfTeam==='function'?mfTeam(x.teamId):null;write((t?.art.name||'')+' / '+(t?.team.name||'')+' I'+x.iteration+' | beschikbaar '+x.available+' | gepland '+x.planned,9,false,5,3)}
+  title('13 – PI Objectives en Business Value');
+  for(const x of state.method.objectives||[]){const t=typeof mfTeam==='function'?mfTeam(x.teamId):null;write((t?.team.name||'')+': '+x.title+' | '+x.commitment+' | planned BV '+x.plannedBV+' | actual BV '+x.actualBV,9,false,5,4)}
+  title('14 – ART Planning Board');
+  for(const x of state.method.features||[]){const t=typeof mfTeam==='function'?mfTeam(x.teamId):null;write('I'+x.iteration+' | '+(t?.team.name||'')+' | '+x.type+': '+x.title+' | '+x.status,9,false,5,4)}
+  title('15 – ROAM en risicoopvolging');
+  for(const x of state.method.risks||[])write('['+x.roam+'] '+x.title+' | eigenaar '+(x.owner||'open')+' | maatregel '+(x.action||'-'),9,false,5,4);
+  title('16 – Confidence Votes, besluiten en Plan Rework');
+  row('Herplanning',state.method.rework||'');row('Plan vastgesteld',state.method.committedAt||'Nog niet');
+  for(const x of state.method.votes||[]){const t=typeof mfTeam==='function'?mfTeam(x.teamId):null;write((t?.team.name||'')+': '+x.score+'/5 '+x.note,9,false,5,4)}
+  for(const x of state.method.decisions||[])write(x.title+' | '+x.owner+' | '+x.status,9,false,5,4);
+ }
  if(ops.length)pages.push(ops.join(''));
  const objects=[];const push=x=>(objects.push(x),objects.length),catalog=push(''),pagesObj=push(''),normal=push('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>'),bold=push('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>');
  const children=[];
