@@ -82,7 +82,7 @@ html{scroll-padding-top:30px}body{background:#f4f7f6;color:var(--text);font-fami
 <div class="workspace-lead"><div><span class="step-kicker">03 / BUILD YOUR CALENDAR</span><h2>Make it yours.</h2><p>De ceremonies zijn jouw vertrekpunt. Pas de datums en tijden aan en download de agenda voor Outlook.</p></div><span class="workspace-breadcrumb">SET UP → SELECT → EXPORT</span></div>
 <main class="cols">
 <aside class="sidebar">
-<section class="panel"><h2>2. Planning Interval</h2><p class="sub">Vul iedere iteratie afzonderlijk in. Voeg zoveel iteraties toe als nodig.</p><div class="field"><label for="piName">PI-naam</label><input id="piName" maxlength="90" placeholder="bijv. PI 2027.1"></div><div id="iterations"></div><div class="row-btns"><button class="btn small ghost" id="addIteration">+ Iteratie toevoegen</button><button class="btn small ghost" id="autoDates" title="Vult ontbrekende datums vanaf 2 november 2026 met intervallen van 2 weken">Voorbeelddata</button></div><div class="divider"></div><label class="field"><span class="f-label">Huidige PI Planning (optioneel)</span><input id="currentPiPlanning" type="date"><span class="hint">Alleen nodig als je deze PI Planning wilt opnemen.</span></label><label class="field"><span class="f-label">PI Planning volgende PI (optioneel)</span><input id="nextPiPlanning" type="date"><span class="hint">Bijvoorbeeld tijdens de IP Iteration.</span></label><div class="notice">Alle datums blijven op dit apparaat. Voer geen vertrouwelijke of operationele informatie in.</div><div class="row-btns"><button id="saveConfig" class="btn small ghost">JSON opslaan</button><button id="importConfig" class="btn small ghost">JSON laden</button><input id="importFile" type="file" accept="application/json,.json" class="hide"></div></section>
+<section class="panel"><h2>2. Planning Interval</h2><p class="sub">Vul iedere iteratie afzonderlijk in. Voeg zoveel iteraties toe als nodig.</p><div class="field"><label for="piName">PI-naam</label><input id="piName" maxlength="90" placeholder="bijv. PI 2027.1"></div><div class="auto-sequence"><label class="auto-check"><input id="autoCascade" type="checkbox" checked><span><strong>Automatisch doortellen</strong><small>Kies de startdatum van iteratie 1. De rest wordt per twee weken ingevuld. Verleng een iteratie, dan schuift de planning mee.</small></span></label></div><div id="iterations"></div><div class="iteration-timeline-block"><div class="iteration-timeline-head"><strong>PI-overzicht</strong><span id="piPeriodSummary">Vul een startdatum in</span></div><div id="iterationTimeline" class="iteration-timeline"></div></div><div class="row-btns"><button class="btn small ghost" id="addIteration">+ Iteratie toevoegen</button><button class="btn small ghost" id="autoDates" title="Vult ontbrekende datums vanaf 2 november 2026 met intervallen van 2 weken">Voorbeelddata</button></div><div class="divider"></div><label class="field"><span class="f-label">Huidige PI Planning (optioneel)</span><input id="currentPiPlanning" type="date"><span class="hint">Alleen nodig als je deze PI Planning wilt opnemen.</span></label><label class="field"><span class="f-label">PI Planning volgende PI (optioneel)</span><input id="nextPiPlanning" type="date"><span class="hint">Bijvoorbeeld tijdens de IP Iteration.</span></label><div class="notice">Alle datums blijven op dit apparaat. Voer geen vertrouwelijke of operationele informatie in.</div><div class="row-btns"><button id="saveConfig" class="btn small ghost">JSON opslaan</button><button id="importConfig" class="btn small ghost">JSON laden</button><input id="importFile" type="file" accept="application/json,.json" class="hide"></div></section>
 <section class="panel" id="exportPanel"><h2>4. Outlook-export</h2><p class="sub">Alleen aangevinkte ceremonies worden meegenomen. Er worden geen uitnodigingen verstuurd.</p><div class="summary"><div class="stat"><b id="selectedCount">0</b><small>geselecteerd</small></div><div class="stat"><b id="eventCount">0</b><small>afspraken</small></div><div class="stat"><b id="warningCount">0</b><small>meldingen</small></div></div><button class="btn primary wide" id="exportIcs">↓ Download Outlook-kalender (.ics)</button><p class="hint">Importeer het bestand zelf in Outlook. Een nieuwe import kan dubbele afspraken opleveren. Controleer alle voorgestelde tijden.</p><div id="validation"></div></section>
 </aside>
 <div>
@@ -135,7 +135,7 @@ const LIBRARY=[
 const GROUPS=['PI Planning','Teamceremonies','ART-ceremonies','IP Iteration & afsluiting','Voorbereiding (optioneel)'];
 const $=id=>document.getElementById(id);
 const clone=o=>JSON.parse(JSON.stringify(o));
-function defaultState(){return {piName:'PI 2027.1',role:'',showRelevantOnly:false,iterations:[{id:'i1',name:'Iteratie 1',type:'development',start:'',end:''},{id:'i2',name:'Iteratie 2',type:'development',start:'',end:''},{id:'i3',name:'Iteratie 3',type:'development',start:'',end:''},{id:'i4',name:'Iteratie 4',type:'development',start:'',end:''},{id:'ip',name:'IP Iteration',type:'ip',start:'',end:''}],currentPiPlanning:'',nextPiPlanning:'',picked:{},overrides:{}}}
+function defaultState(){return {piName:'PI 2027.1',role:'',autoCascade:true,showRelevantOnly:false,iterations:[{id:'i1',name:'Iteratie 1',type:'development',start:'',end:''},{id:'i2',name:'Iteratie 2',type:'development',start:'',end:''},{id:'i3',name:'Iteratie 3',type:'development',start:'',end:''},{id:'i4',name:'Iteratie 4',type:'development',start:'',end:''},{id:'ip',name:'IP Iteration',type:'ip',start:'',end:''}],currentPiPlanning:'',nextPiPlanning:'',picked:{},overrides:{}}}
 let state=loadState()||defaultState();
 function relevant(c){return c.roles.includes(state.role)}
 function presetPick(){for(const c of LIBRARY)state.picked[c.id]=relevant(c)&&!c.optional&&(c.id!=='next-pi'||!!state.nextPiPlanning)&&(c.id!=='pi-planning'||!!state.currentPiPlanning)}
@@ -147,6 +147,41 @@ function format(date){const [y,m,d]=date.split('-');return `${d}-${m}-${y}`}
 function iso(d){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`}
 function fromISO(s){if(!/^\d{4}-\d{2}-\d{2}$/.test(s||''))return null;const [y,m,d]=s.split('-').map(Number);const out=new Date(y,m-1,d,12,0,0);return out.getFullYear()===y&&out.getMonth()===m-1&&out.getDate()===d?out:null}
 function addDays(s,n){const d=fromISO(s);if(!d)return '';d.setDate(d.getDate()+n);return iso(d)}
+function calendarDays(start,end){const a=fromISO(start),b=fromISO(end);return a&&b&&end>=start?Math.round((b-a)/86400000)+1:0}
+function iterationDays(it){return calendarDays(it.start,it.end)||14}
+function shiftLaterIterations(idx){
+  if(!state.autoCascade)return;
+  const current=state.iterations[idx];
+  if(!current||!current.start||!current.end||current.end<current.start)return;
+  let end=current.end;
+  for(let i=idx+1;i<state.iterations.length;i++){
+    const it=state.iterations[i],days=iterationDays(it);
+    it.start=addDays(end,1);
+    it.end=addDays(it.start,days-1);
+    end=it.end;
+  }
+}
+function updateIterationDate(id,field,value){
+  const idx=state.iterations.findIndex(it=>it.id===id);
+  if(idx<0)return;
+  const it=state.iterations[idx],originalDays=iterationDays(it);
+  it[field]=value;
+  if(state.autoCascade&&field==='start'&&fromISO(value))it.end=addDays(value,originalDays-1);
+  if(state.autoCascade)shiftLaterIterations(idx);
+  renderIterations();saveState();refresh();
+}
+function renderIterationTimeline(){
+  const root=$('iterationTimeline'),summary=$('piPeriodSummary');
+  if(!root||!summary)return;
+  const planned=state.iterations.filter(it=>it.start&&it.end&&it.start<=it.end);
+  if(!planned.length){root.innerHTML='<span class="timeline-empty">Je tijdlijn verschijnt na het invoeren van een startdatum.</span>';summary.textContent='Vul een startdatum in';return}
+  const start=planned.reduce((a,b)=>!a||b.start<a?b.start:a,'');
+  const end=planned.reduce((a,b)=>!a||b.end>a?b.end:a,'');
+  const length=calendarDays(start,end);
+  summary.textContent=`${format(start)} – ${format(end)} · ${(length/7).toLocaleString('nl-NL',{maximumFractionDigits:1})} weken`;
+  root.innerHTML=planned.map(it=>{const d=iterationDays(it);return `<div class="timeline-segment ${it.type==='ip'?'timeline-ip':''}" style="flex:${d}" title="${esc(it.name)} – ${format(it.start)} t/m ${format(it.end)}"><strong>${esc(it.type==='ip'?'IP':it.name.replace(/Iteratie/i,'I'))}</strong><small>${d%7===0?d/7+'w':d+'d'}</small></div>`}).join('');
+}
+
 function easter(y){const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451),month=Math.floor((h+l-7*m+114)/31),day=((h+l-7*m+114)%31)+1;return new Date(y,month-1,day,12)}
 function holidays(y){const ed=iso(easter(y));const king=new Date(y,3,27,12);if(king.getDay()===0)king.setDate(26);return new Set([`${y}-01-01`,iso(king),`${y}-05-05`,`${y}-12-25`,`${y}-12-26`,addDays(ed,1),addDays(ed,39),addDays(ed,50),ed])}
 const holidayCache={};function isHoliday(s){const year=+(s||'').slice(0,4);if(!year)return false;if(!holidayCache[year])holidayCache[year]=holidays(year);return holidayCache[year].has(s)}
@@ -156,7 +191,20 @@ function priorBusinessDay(s,count){let d=s,i=0,limit=0;while(i<count&&limit++<40
 function nextWorkingDate(s){let d=s,n=0;while(d&&!isWorkday(d)&&n++<10)d=addDays(d,1);return d}
 function allSelected(){return LIBRARY.filter(c=>state.picked[c.id])}
 function config(c){return {...c,...(state.overrides[c.id]||{})}}
-function renderIterations(){const root=$('iterations');root.innerHTML='';state.iterations.forEach((it,index)=>{const box=document.createElement('div');box.className='iteration';box.innerHTML=`<div class="iteration-head"><span>${esc(it.name)} ${it.type==='ip'?'<span class="chip">IP</span>':''}</span><button class="tiny" data-del="${esc(it.id)}" title="Verwijderen" aria-label="Verwijder ${esc(it.name)}">✕</button></div><div class="date-inputs"><label class="date-field">Start<input type="date" data-iteration="${esc(it.id)}" data-field="start" value="${esc(it.start)}"></label><label class="date-field">Einde<input type="date" data-iteration="${esc(it.id)}" data-field="end" value="${esc(it.end)}"></label></div>`;root.append(box)});root.querySelectorAll('[data-del]').forEach(btn=>btn.addEventListener('click',()=>{state.iterations=state.iterations.filter(x=>x.id!==btn.dataset.del);renderAll()}));root.querySelectorAll('[data-iteration]').forEach(inp=>inp.addEventListener('change',()=>{const it=state.iterations.find(x=>x.id===inp.dataset.iteration);if(it)it[inp.dataset.field]=inp.value;saveState();refresh()}))}
+function renderIterations(){
+  const root=$('iterations');root.innerHTML='';
+  state.iterations.forEach(it=>{
+    const box=document.createElement('div'),days=calendarDays(it.start,it.end);
+    box.className='iteration'+(days&&days!==14?' iteration-extended':'');
+    const duration=days?(days%7===0?days/7+' weken':days+' dagen'):'Nog niet gepland';
+    box.innerHTML=`<div class="iteration-head"><span>${esc(it.name)} ${it.type==='ip'?'<span class="chip">IP</span>':''}</span><span class="iteration-duration">${esc(duration)}</span><button class="tiny" data-del="${esc(it.id)}" title="Verwijderen" aria-label="Verwijder ${esc(it.name)}">✕</button></div><div class="date-inputs"><label class="date-field">Start<input type="date" data-iteration="${esc(it.id)}" data-field="start" value="${esc(it.start)}"></label><label class="date-field">Einde<input type="date" data-iteration="${esc(it.id)}" data-field="end" value="${esc(it.end)}"></label></div>`;
+    root.append(box);
+  });
+  root.querySelectorAll('[data-del]').forEach(btn=>btn.addEventListener('click',()=>{const idx=state.iterations.findIndex(x=>x.id===btn.dataset.del);if(idx<0)return;state.iterations.splice(idx,1);if(state.autoCascade&&idx>0)shiftLaterIterations(idx-1);renderAll()}));
+  root.querySelectorAll('[data-iteration]').forEach(inp=>inp.addEventListener('change',()=>updateIterationDate(inp.dataset.iteration,inp.dataset.field,inp.value)));
+  renderIterationTimeline();
+}
+
 function renderRoles(){document.querySelectorAll('[data-role]').forEach(b=>{const on=b.dataset.role===state.role;b.classList.toggle('active',on);b.setAttribute('aria-pressed',on)});$('roleHint').textContent=state.role?`Gekozen: ${ROLE_NAMES[state.role]}. Andere ceremonies blijven beschikbaar.`:'Kies een rol om te beginnen.';$('relevantOnly').textContent=state.showRelevantOnly?'Toon alle ceremonies':'Toon alleen relevant'}
 function renderLibrary(){const root=$('ceremonyList');root.innerHTML='';const q=$('search').value.trim().toLowerCase();let shown=0;for(const grp of GROUPS){const members=LIBRARY.filter(c=>c.group===grp&&(!state.showRelevantOnly||relevant(c))&&(!q||(c.name+' '+c.description+' '+c.source).toLowerCase().includes(q)));if(!members.length)continue;const section=document.createElement('div');section.className='group';section.innerHTML=`<div class="group-title">${esc(grp)}<span>${members.length} onderdelen</span></div>`;for(const c of members){shown++;const cfg=config(c),checked=!!state.picked[c.id],mine=relevant(c);const el=document.createElement('div');el.className='item'+(checked?' checked':'');el.innerHTML=`<input type="checkbox" data-select="${esc(c.id)}" aria-label="Selecteer ${esc(c.name)}" ${checked?'checked':''}><div><div class="item-row"><div class="item-title">${esc(c.name)}</div><span class="chip ${mine?'mine':'other'}">${mine?'Jouw rol':'Andere rol'}</span></div><div class="item-sub">${esc(c.description)}</div><div class="item-chips"><span class="chip">Planner: ${esc(c.planner)}</span><span class="chip">Facilitator: ${esc(c.host)}</span><span class="chip">${esc(cfg.duration)} min${['current-pi','next-pi'].includes(c.rule)?' / dag':''}</span>${c.optional?'<span class="chip optional">Optioneel / onderdeel</span>':''}</div><details class="details"><summary>Details en tijd aanpassen</summary><div class="inside"><b>Planning, ${esc(ROLE_NAMES[c.planner]||c.planner)}</b> · Facilitatie: ${esc(ROLE_NAMES[c.host]||c.host)} · Inhoud: ${esc(ROLE_NAMES[c.owner]||c.owner)}<br><b>Deelnemersrollen:</b> ${c.roles.map(r=>esc(r)).join(', ')}<div class="detail-fields"><label>Begintijd<input class="small-input" type="time" data-override="${esc(c.id)}" data-prop="time" value="${esc(cfg.time)}"></label><label>Duur (min)<input class="small-input" type="number" min="10" max="600" step="5" data-override="${esc(c.id)}" data-prop="duration" value="${esc(cfg.duration)}"></label>${c.rule==='weekly'?`<label>Weekdag<select class="small-input" data-override="${esc(c.id)}" data-prop="weekday">${['maandag','dinsdag','woensdag','donderdag','vrijdag'].map((day,i)=>`<option value="${i+1}" ${+cfg.weekday===i+1?'selected':''}>${day}</option>`).join('')}</select></label>`:''}</div><b>Voorbereiding</b><ul>${c.prepare.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><b>Agenda</b><ul>${c.agenda.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><b>Verwacht resultaat</b><div>${esc(c.output)}</div><div class="hint" style="margin-top:8px">Bron: ${esc(c.source)}</div></div></details></div>`;section.append(el)}root.append(section)}if(!shown)root.innerHTML='<div class="empty">Geen ceremonies gevonden. Verwijder het zoekfilter.</div>';$('libraryCount').textContent=`${LIBRARY.length} ceremonies en optionele onderdelen · ${shown} zichtbaar`;root.querySelectorAll('[data-select]').forEach(inp=>inp.addEventListener('change',()=>{state.picked[inp.dataset.select]=inp.checked;saveState();renderLibrary();refresh()}));root.querySelectorAll('[data-override]').forEach(inp=>inp.addEventListener('change',()=>{const id=inp.dataset.override,k=inp.dataset.prop;state.overrides[id]??={};state.overrides[id][k]=['duration','weekday'].includes(k)?Math.max(1,Number(inp.value)||1):inp.value;saveState();refresh()}))}
 function validate(){const errs=[];if(!state.role)errs.push('Kies eerst jouw rol binnen de ART.');const ranges=state.iterations.filter(i=>i.start||i.end);if(!ranges.length)errs.push('Vul minimaal één volledige iteratie in.');for(const x of ranges){if(!x.start||!x.end)errs.push(`${x.name}: start en einde ontbreken.`);else if(x.end<x.start)errs.push(`${x.name}: einddatum ligt vóór startdatum.`)}const sorted=ranges.filter(x=>x.start&&x.end).sort((a,b)=>a.start.localeCompare(b.start));for(let i=1;i<sorted.length;i++)if(sorted[i].start<=sorted[i-1].end)errs.push(`Iteraties overlappen: ${sorted[i-1].name} en ${sorted[i].name}.`);if(!allSelected().length)errs.push('Vink minstens één ceremonie aan.');return errs}
@@ -178,8 +226,14 @@ lines.push('END:VCALENDAR');return lines.map(foldLine).join('\r\n')+'\r\n'}
 function download(name,content,type){const blob=new Blob([type.startsWith('text/calendar')?'':'\ufeff',content],{type});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000)}
 function toast(s){const x=$('toast');x.textContent=s;x.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>x.classList.remove('show'),3300)}
 function slug(s){return String(s).toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,60)||'planning-interval'}
-function renderAll(){renderIterations();renderRoles();renderLibrary();refresh();saveState()}
+function renderAll(){$('autoCascade').checked=state.autoCascade!==false;renderIterations();renderRoles();renderLibrary();refresh();saveState()}
 $('piName').value=state.piName;$('currentPiPlanning').value=state.currentPiPlanning||'';$('nextPiPlanning').value=state.nextPiPlanning||'';
+$('autoCascade').checked=state.autoCascade!==false;
+$('autoCascade').addEventListener('change',e=>{
+  state.autoCascade=e.target.checked;
+  if(state.autoCascade){const first=state.iterations.findIndex(it=>it.start&&it.end&&it.start<=it.end);if(first>=0)shiftLaterIterations(first)}
+  renderAll();toast(state.autoCascade?'Iteraties worden automatisch doorgerekend.':'Automatisch doortellen uitgeschakeld.');
+});
 $('piName').addEventListener('input',e=>{state.piName=e.target.value;saveState();refresh()});for(const id of ['currentPiPlanning','nextPiPlanning'])$(id).addEventListener('change',e=>{state[id]=e.target.value;saveState();refresh()});
 document.querySelectorAll('[data-role]').forEach(el=>el.addEventListener('click',()=>{state.role=el.dataset.role;presetPick();renderAll();document.getElementById('frameworkHeading')?.scrollIntoView({behavior:'smooth',block:'start'})}));
 $('relevantOnly').addEventListener('click',()=>{state.showRelevantOnly=!state.showRelevantOnly;renderRoles();renderLibrary();saveState()});
@@ -187,7 +241,7 @@ $('search').addEventListener('input',renderLibrary);
 $('selectRelevant').addEventListener('click',()=>{presetPick();renderAll()});
 $('selectAll').addEventListener('click',()=>{for(const c of LIBRARY)state.picked[c.id]=true;renderAll()});
 $('clearAll').addEventListener('click',()=>{for(const c of LIBRARY)state.picked[c.id]=false;renderAll()});
-$('addIteration').addEventListener('click',()=>{const count=state.iterations.filter(x=>x.type==='development').length;const record={id:'i'+Date.now(),name:`Iteratie ${count+1}`,type:'development',start:'',end:''};const ipIdx=state.iterations.findIndex(i=>i.type==='ip');if(ipIdx<0)state.iterations.push(record);else state.iterations.splice(ipIdx,0,record);renderAll()});
+$('addIteration').addEventListener('click',()=>{const count=state.iterations.filter(x=>x.type==='development').length;const record={id:'i'+Date.now(),name:`Iteratie ${count+1}`,type:'development',start:'',end:''};const ipIdx=state.iterations.findIndex(i=>i.type==='ip');if(ipIdx<0)state.iterations.push(record);else state.iterations.splice(ipIdx,0,record);const idx=state.iterations.findIndex(i=>i.id===record.id);if(state.autoCascade&&idx>0){const prev=state.iterations[idx-1];if(prev.start&&prev.end&&prev.end>=prev.start){record.start=addDays(prev.end,1);record.end=addDays(record.start,13);shiftLaterIterations(idx)}}renderAll()});
 $('autoDates').addEventListener('click',()=>{let cur='2026-11-02';const dev=state.iterations.filter(x=>x.type==='development');for(const i of dev){i.start=cur;i.end=addDays(cur,13);cur=addDays(cur,14)}for(const i of state.iterations.filter(x=>x.type==='ip')){i.start=cur;i.end=addDays(cur,13)}if(!state.currentPiPlanning){state.currentPiPlanning='2026-10-29'}if(!state.nextPiPlanning){state.nextPiPlanning=addDays(cur,8)}$('currentPiPlanning').value=state.currentPiPlanning;$('nextPiPlanning').value=state.nextPiPlanning;renderAll();toast('Voorbeelddata ingevuld. Pas deze aan voor jouw PI.')});
 $('saveConfig').addEventListener('click',()=>download(`safe-agile-forge-${slug(state.piName)}.json`,JSON.stringify({...state,version:1},null,2),'application/json;charset=utf-8'));
 $('importConfig').addEventListener('click',()=>$('importFile').click());
