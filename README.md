@@ -2,6 +2,8 @@
 
 **SAFe Agile Forge — PI Ceremony Planner & PI Event Command Center**, a NOVYX FORGE project.
 
+**Current edition (2026-10-28):** task-first landing, personal ceremony preparation and ART context, a guided PI Event Planner with a classical-SAFe methodology workflow, offline XLSX/PDF exports, and searchable beginner help.
+
 Select a role (RTE, PM, PO or Scrum Master) to plan ceremonies, or select PI Planner to organize the event itself. In the ceremony planner, select ceremonies, enter your PI iteration dates, preview the proposed events and download an Outlook-compatible `.ics` calendar. Runs entirely in the browser without a backend.
 
 ## Hosting and publication
@@ -44,9 +46,21 @@ The landing page includes a **PI Planner** choice, separate from the RTE / PM / 
 - Room capacities, session overlaps, double-booked speaker warnings.
 - Participant and RSVP status, CSV import/export, catering preferences, onsite check-in.
 - Checklist, event feedback, post-event actions.
-- Offline generated **PDF event draaiboek** and **real .xlsx workbook** with 12 data tabs.
+- Offline generated **PDF event draaiboek** and **real .xlsx workbook** with 20 data tabs, including PI Objectives, ROAM and ART confidence.
 - Outlook-compatible calendar (.ics) for the event or program.
 - Shareable **RSVP form** at `rsvp.html`: responses via the participant's email client or a downloadable CSV that the organizer imports.
+
+### SAFe methodology workflow (classical PI Planning)
+- Readiness: Organizational, Content and Logistics, individually marked by responsible organizers.
+- Team capacity per iteration, committed/uncommitted PI Objectives, planned/actual Business Value.
+- Editable ART Planning Board by team and iteration.
+- ROAM risk register, planning adjustments, team **and ART** confidence votes, plan rework and final results check.
+- Three-phase navigation: Prepare / Execute / Close.
+- Corrected content ownership of Business Context (Business Owners) and Architecture Vision (System Architect) in the ceremony library.
+- Mutually exclusive full-event versus sub-event selection; personal ceremony preparation checklist and original-role calendar/PDF/Excel exports.
+- Searchable SAFe term guide and task-first landing screen.
+
+**These controls are planning aids, not actual organizational signoff or a substitute for official SAFe practices.** Individual teams and ARTs must validate the objectives, votes, business value, assumptions and decisions.
 
 ### Current architectural limits
 This version is static HTML/JS, hosted without a backend. Event data is stored **per browser** in localStorage and can be backed up/imported as JSON. There is **no server-side multi-organizer synchronization, online database, centralized RSVP collection, automatic email delivery, live room reservations or direct Outlook/Defensie integration**. The RSVP link provides a prefilled form, but recipients must explicitly send an email or export a CSV; their response is not silently collected by the app.
@@ -56,3 +70,7 @@ Treat generated documents as proposed plans requiring organizational review. Onl
 ## Security and disclaimer
 
 The app is a local browser-based calendar proposal tool. It does not connect to Microsoft 365 or Defensie systems. Imported `.ics` files are not automatically distributed as meeting invitations. Do not enter operationally sensitive or classified information in a publicly hosted tool. Independent project, not affiliated with Scaled Agile.
+
+## Delivery status
+
+Major methodological P0 components have been added, but the original ~80-item wish list is **not fully complete**. See [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) for delivered, partial and backend-dependent capabilities. Implemented items have passed isolated JavaScript and export tests; a full browser and cross-device acceptance test is still needed.
