@@ -317,6 +317,25 @@ html{scroll-padding-top:30px}body{background:#f4f7f6;color:var(--text);font-fami
 .landing-mode:not(.ceremony-onboarding) .forge-intro{min-height:min(730px,calc(100svh - 130px))}
 .landing-mode.ceremony-onboarding .forge-intro .rolebar .event-role{display:none}
 @media(max-width:650px){.forge-task-grid{grid-template-columns:1fr}.forge-task-card{min-height:175px;padding:18px}.forge-task-choice{margin-top:20px}.forge-task-card strong{font-size:17px}}
+
+.ceremony-context{background:#fff;border:1px solid #cce5dc;border-radius:19px;padding:22px 25px;margin:4px 0 25px}
+.ceremony-context h2{font-size:22px;margin:5px 0 7px;color:#205350;letter-spacing:-.035em}
+.ceremony-context .sub{margin-bottom:16px}
+.ceremony-context-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:10px;align-items:end}
+.ceremony-context-grid button{min-height:43px}
+.ceremony-context-warning{margin-top:13px;background:#eff8f3;color:#276e62;border:1px solid #d1e9dc;border-radius:10px;padding:10px 13px;font-size:11px;line-height:1.5}
+.ceremony-guide{margin:0 0 18px}.ceremony-guide .heading h2{font-size:21px}
+.ceremony-guide-list{display:grid;gap:10px}
+.ceremony-guide-item{border:1px solid #d9e7df;border-radius:13px;background:#f8fcfa;padding:12px 14px}
+.ceremony-guide-item summary{cursor:pointer;font-size:13px;font-weight:800;color:#205d54;display:flex;gap:8px;justify-content:space-between;align-items:center}
+.ceremony-guide-item summary::-webkit-details-marker{display:none}
+.ceremony-guide-item .hint{font-size:11px;line-height:1.5;margin:8px 0}
+.ceremony-guide-check{display:flex;align-items:start;gap:8px;font-size:12px;padding:6px 0;color:#427267}
+.ceremony-guide-check input{width:17px;height:17px;flex:none;accent-color:#168b78;margin:1px 0}
+.ceremony-guide-note{margin-top:9px}.ceremony-guide-note input{font-size:12px}
+.ceremony-guide-status{white-space:nowrap;font-size:10px;padding:4px 7px;border-radius:20px;background:#e3f3eb;color:#177d65}
+@media(max-width:900px){.ceremony-context-grid{grid-template-columns:1fr 1fr}.ceremony-context-grid button{grid-column:1/-1}}
+@media(max-width:650px){.ceremony-context{padding:18px}.ceremony-context-grid{grid-template-columns:1fr}.ceremony-context-grid button{grid-column:auto}.ceremony-context h2{font-size:20px}}
 </style>
 </head>
 <body class="landing-mode">
@@ -390,13 +409,18 @@ html{scroll-padding-top:30px}body{background:#f4f7f6;color:var(--text);font-fami
   <div class="framework-foot"><span>SAFe AGILE FORGE / THE ART FLOW</span><span>EVERY EVENT. ONE CLEAR RHYTHM.</span></div>
 </section>
 <div class="workspace-lead" id="workspaceLead"><div><span class="step-kicker">03 / BUILD YOUR CALENDAR</span><h2>Make it yours.</h2><p>De ceremonies zijn jouw vertrekpunt. Pas de datums en tijden aan en download de agenda voor Outlook.</p></div><span class="workspace-breadcrumb">SET UP → SELECT → EXPORT</span></div>
-<main class="cols">
+<section class="ceremony-context" id="ceremonyContext">
+ <div class="step-kicker">JOUW CONTEXT</div><h2>Voor welke ART en welk team maak je dit plan?</h2>
+ <p class="sub">Kies eventueel een ART en team uit de PI Event Planner, of typ ze zelf. Alleen gegevens uit deze browser kunnen worden overgenomen.</p>
+ <div class="ceremony-context-grid"><label class="field"><span class="f-label">ART</span><input id="ceremonyArt" placeholder="Bijv. Align & Innovate" list="ceremonyArts"></label><label class="field"><span class="f-label">Team (optioneel)</span><input id="ceremonyTeam" placeholder="Bijv. Team Delta" list="ceremonyTeams"></label><button id="ceremonyImportEvent" class="btn small ghost" type="button">PI Planner-gegevens gebruiken</button></div><datalist id="ceremonyArts"></datalist><datalist id="ceremonyTeams"></datalist>
+ <div class="ceremony-context-warning" id="ceremonyCadenceNote">Start met de ART-context en controleer de iteratieplanning.</div>
+</section><main class="cols">
 <aside class="sidebar">
 <section class="panel"><h2>2. Planning Interval</h2><p class="sub">De startdatum uit het beginscherm vult automatisch het PI-voorstel. Je kunt alles achteraf aanpassen en de cadans afstemmen op de andere ARTs.</p><div class="field"><label for="piName">PI-naam</label><input id="piName" maxlength="90" placeholder="bijv. PI 2027.1"></div><div class="auto-sequence"><label class="auto-check"><input id="autoCascade" type="checkbox" checked><span><strong>Automatisch doortellen</strong><small>Kies de startdatum van iteratie 1. De rest wordt per twee weken ingevuld. Verleng een iteratie, dan schuift de planning mee.</small></span></label></div><div id="iterations"></div><div class="iteration-timeline-block"><div class="iteration-timeline-head"><strong>PI-overzicht</strong><span id="piPeriodSummary">Vul een startdatum in</span></div><div id="iterationTimeline" class="iteration-timeline"></div></div><div class="row-btns"><button class="btn small ghost" id="addIteration">+ Iteratie toevoegen</button><button class="btn small ghost" id="autoDates" title="Vult ontbrekende datums vanaf 2 november 2026 met intervallen van 2 weken">Voorbeelddata</button></div><div class="divider"></div><label class="field"><span class="f-label">Huidige PI Planning (optioneel)</span><input id="currentPiPlanning" type="date"><span class="hint">Alleen nodig als je deze PI Planning wilt opnemen.</span></label><label class="field"><span class="f-label">PI Planning volgende PI (optioneel)</span><input id="nextPiPlanning" type="date"><span class="hint">Bijvoorbeeld tijdens de IP Iteration.</span></label><div class="notice">Alle datums blijven op dit apparaat. Voer geen vertrouwelijke of operationele informatie in.</div><div class="row-btns"><button id="saveConfig" class="btn small ghost">JSON opslaan</button><button id="importConfig" class="btn small ghost">JSON laden</button><input id="importFile" type="file" accept="application/json,.json" class="hide"></div></section>
-<section class="panel" id="exportPanel"><h2>4. Download jouw PI-plan</h2><p class="sub">Download Outlook-afspraken en een persoonlijk PDF-draaiboek met jouw rol en verantwoordelijkheden per gekozen ceremonie. Geen uitnodigingen worden verstuurd.</p><div class="summary"><div class="stat"><b id="selectedCount">0</b><small>geselecteerd</small></div><div class="stat"><b id="eventCount">0</b><small>afspraken</small></div><div class="stat"><b id="warningCount">0</b><small>meldingen</small></div></div><div class="export-actions"><button class="btn primary wide" id="exportIcs">↓ Outlook-kalender (.ics)</button><button class="btn secondary wide" id="exportPdf">↓ Mijn rol &amp; verantwoordelijkheden (.pdf)</button></div><p class="hint">Importeer het bestand zelf in Outlook. Een nieuwe import kan dubbele afspraken opleveren. Controleer alle voorgestelde tijden.</p><div id="validation"></div></section>
+<section class="panel" id="exportPanel"><h2>4. Download jouw PI-plan</h2><p class="sub">Download Outlook-afspraken en een persoonlijk PDF-draaiboek met jouw rol en verantwoordelijkheden per gekozen ceremonie. Geen uitnodigingen worden verstuurd.</p><div class="summary"><div class="stat"><b id="selectedCount">0</b><small>geselecteerd</small></div><div class="stat"><b id="eventCount">0</b><small>afspraken</small></div><div class="stat"><b id="warningCount">0</b><small>meldingen</small></div></div><div class="export-actions"><button class="btn primary wide" id="exportIcs">↓ Outlook-kalender (.ics)</button><button class="btn secondary wide" id="exportPdf">↓ Mijn rol &amp; verantwoordelijkheden (.pdf)</button><button class="btn secondary wide" id="exportCeremonyExcel" type="button">↓ Ceremonieplanner Excel (.xlsx)</button></div><p class="hint">Importeer het bestand zelf in Outlook. Een nieuwe import kan dubbele afspraken opleveren. Controleer alle voorgestelde tijden.</p><div id="validation"></div></section>
 </aside>
 <div>
-<section class="panel" id="ceremonyPanel"><div class="heading"><h2>3. Selecteer ceremonies</h2><span id="libraryCount"></span></div><div class="toolbar"><div class="toolbar-left"><button class="btn small ghost" id="selectRelevant">Selecteer relevant</button><button class="btn small ghost" id="selectAll">Alles aanvinken</button><button class="btn small ghost" id="clearAll">Alles uit</button></div></div><div class="filters"><input class="search" id="search" type="search" placeholder="Zoek een ceremonie…" aria-label="Zoek ceremonie"><span class="pill">Bron: Leading SAFe / POPM 2026</span></div><div id="ceremonyList"></div></section>
+<section class="panel ceremony-guide" id="ceremonyGuide"><div class="heading"><h2>Jouw SAFe-voorbereiding</h2><span id="readinessSummary"></span></div><p class="sub">Werk per geselecteerde ceremonie de voorbereiding af. Forge geeft uitleg over je rol en het verwachte resultaat.</p><div id="ceremonyReadiness"></div></section><section class="panel" id="ceremonyPanel"><div class="heading"><h2>3. Selecteer ceremonies</h2><span id="libraryCount"></span></div><div class="toolbar"><div class="toolbar-left"><button class="btn small ghost" id="selectRelevant">Selecteer relevant</button><button class="btn small ghost" id="selectAll">Alles aanvinken</button><button class="btn small ghost" id="clearAll">Alles uit</button></div></div><div class="filters"><input class="search" id="search" type="search" placeholder="Zoek een ceremonie…" aria-label="Zoek ceremonie"><span class="pill">Bron: Leading SAFe / POPM 2026</span></div><div id="ceremonyList"></div></section>
 <section class="panel preview"><div class="heading"><h2>Kalendervoorbeeld</h2><span id="previewTotal">0 afspraken</span></div><p class="sub">Je ziet hieronder direct wat er in jouw Outlook-bestand komt.</p><div class="tablewrap"><table class="event-table"><thead><tr><th>Datum</th><th>Ceremonie</th><th>Tijd</th><th>Iteratie</th></tr></thead><tbody id="previewBody"></tbody></table></div><div class="hint" style="margin-top:11px">Dit zijn voorgestelde kalenderblokken, geen bevestigde reserveringen of vergaderuitnodigingen. Afwijkingen zijn vóór de export aan te passen bij de ceremonie.</div></section>
 </div>
 </main>
@@ -666,4 +690,6 @@ $('exportIcs').addEventListener('click',()=>{const errs=validate();const results
 renderAll();
 document.querySelectorAll('[data-target-group]').forEach(el=>el.addEventListener('click',()=>{ const group=el.dataset.targetGroup; if(state.showRelevantOnly){state.showRelevantOnly=false;renderRoles();renderLibrary()} if($('search').value){$('search').value='';renderLibrary()} const h=[...document.querySelectorAll('.group-title')].find(e=>e.textContent.includes(group)); if(h)h.scrollIntoView({behavior:'smooth',block:'center'}); else $('ceremonyPanel').scrollIntoView({behavior:'smooth',block:'start'}); }));
 </script>
+<script src="./pi-planner-export.js?v=20261028-safev4"></script>
+<script src="./ceremony-features.js?v=20261028-safev4"></script>
 </body></html>
