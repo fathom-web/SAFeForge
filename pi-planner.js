@@ -123,7 +123,7 @@ function renderDashboard(){if(typeof ensureOperations==='function')ensureOperati
  const c=counts();
  $('dashboardTitle').textContent=state.eventName||'PI Planning';
  $('eventSubheading').textContent=(state.piName||'PI')+' · '+when(state.days[0])+' & '+when(state.days[1]);
- $('metrics').innerHTML=[['ARTs',c.arts],['Teams',c.teams],['Verwacht',c.people],['Aangemeld',c.yes],['Checks gereed',c.done+'/'+state.checks.length]].map(a=>'<div class="metric"><b>'+a[1]+'</b><small>'+a[0]+'</small></div>').join('');
+ $('metrics').innerHTML=[['ARTs',c.arts],['Teams',c.teams],['Verwacht',c.people],['Aangemeld',c.yes],['Checks gereed',c.done+'/'+state.checks.length],...(typeof operationsMetrics==='function'?[['Open taken',operationsMetrics().due],['Sprekers bevestigd',operationsMetrics().speakers],['Conflictsignalen',scheduleWarnings().length]]:[])].map(a=>'<div class="metric"><b>'+a[1]+'</b><small>'+a[0]+'</small></div>').join('');
  document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
  $('view').innerHTML=tab==='overview'?viewOverview():tab==='agenda'?viewAgenda():tab==='rooms'?viewRooms():tab==='arts'?viewARTs():tab==='tasks'?viewTasks():tab==='speakers'?viewSpeakers():tab==='audit'?viewAudit():tab==='checkin'?viewCheckin():tab==='feedback'?viewFeedback():tab==='people'?viewPeople():tab==='catering'?viewCatering():tab==='invites'?viewInvites():viewChecklist();
 }
@@ -137,7 +137,7 @@ function viewOverview(){
  if(state.arts.length>1)missing.push('Meerdere ARTs: plan cross-ART dependency- en alignmentmomenten');
  if(state.breakoutRooms<c.teams)missing.push('Controleer of er genoeg breakout-ruimtes of teamtafels zijn');
  return '<div class="layout"><section class="panel">'+paneHead('EVENT SUMMARY','Je PI Planning in één overzicht','De basis voor organisatie, planning en logistiek.')+
- '<div class="formgrid">'+[
+ '<div class="buttonline" style="margin:0 0 16px"><button class="btn small" data-tab="tasks">Organisatietaken</button><button class="btn small" data-tab="audit">Controle & capaciteit</button><button class="btn small" data-tab="checkin">Check-in</button><button class="btn small" data-tab="feedback">Evaluatie</button></div><div class="formgrid">'+[
  ['PI',state.piName],['ARTs',c.arts+''],['Teams',c.teams+''],['Verwacht aantal mensen','ca. '+c.people],['Dag 1',when(state.days[0])],['Dag 2',when(state.days[1])],['Deelnamevorm',{onsite:'Fysiek',hybrid:'Hybride',online:'Online'}[state.format]],['Locatie',state.venue||'Nog open'],['Breakouts',state.breakoutRooms+' plekken'],['ART-planning',state.planningMode==='parallel'?'Parallel per ART':'Gezamenlijk'],['Plenair',state.plenairRooms+' ruimte(s)'],['Eventorganisatie',state.organizer||'Nog open'],['Contactadres',state.email||'Nog open']
  ].map(a=>'<div class="entry" style="margin:0"><small class="hint">'+esc(a[0])+'</small><div><strong>'+esc(a[1])+'</strong></div></div>').join('')+'</div><div class="sectiondivider"></div><div class="buttonline"><button class="btn primary" data-tab="agenda">Programma bewerken</button><button class="btn" data-tab="people">Aanmeldingen beheren</button><button class="btn" data-tab="invites">Uitnodiging maken</button></div></section>'+
  '<aside class="panel aside"><h3>Wat vraagt nog aandacht?</h3>'+(!missing.length?'<p class="smallprint">Basisinstellingen zien er compleet uit. Check nu je programma en deelnemers.</p>':'<ul>'+missing.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>')+
