@@ -50,12 +50,55 @@
 .feedback-card p{color:#62817b;font-size:12px}
 @media(max-width:800px){.task-details{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.operational-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.operational-card{padding:11px}.operational-card b{font-size:23px}.task-details{grid-template-columns:1fr}.audit-issue{padding:11px}.checkin-row{padding:10px}.dash-head .buttonline{justify-content:flex-start}}
+
+/* V2.1: always-visible, two-dimensional navigation replaces horizontal scrollbar. */
+.dashboard .tabs{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(138px,1fr));
+ gap:8px;
+ overflow:visible;
+ width:100%;
+ align-items:stretch;
+ margin:25px 0 18px;
+ padding:0;
+ scrollbar-width:auto;
+}
+.dashboard .tabs button{
+ min-width:0;
+ width:100%;
+ white-space:normal;
+ overflow-wrap:anywhere;
+ line-height:1.25;
+ min-height:46px;
+ padding:11px 12px;
+ border:1px solid #cde3d9;
+ border-radius:11px;
+ background:#fff;
+ color:#42746b;
+ font-size:12px;
+ font-weight:800;
+ box-shadow:0 3px 0 #e6f1eb;
+ transition:background .15s,transform .15s;
+}
+.dashboard .tabs button.active{
+ background:#146f69;
+ color:#fff;
+ border-color:#146f69;
+ box-shadow:0 3px 0 #b5ded3;
+}
+.dashboard .tabs button:hover{transform:translateY(-1px);border-color:#299c89}
+.dashboard .tabs button.active:hover{border-color:#146f69}
+#plannerMessage{display:none;margin:0 0 13px;border:1px solid #ead4a7;border-radius:12px;background:#fff8e8;color:#8c622a;padding:13px 15px;font-size:12px;line-height:1.5}
+#plannerMessage.visible{display:block}
+.release-label{font-size:11px;color:#708f87;letter-spacing:.08em;font-weight:750}
+@media(max-width:850px){.dashboard .tabs{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.dashboard .tabs button{font-size:11px}}
+@media(max-width:540px){.dashboard .tabs{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.dashboard .tabs button{font-size:11px;min-height:44px;padding:9px 7px}}
 </style>
 </head>
 <body>
 <div class="topline"></div>
 <div class="wrap">
-<header><a class="brand" href="./"><img src="./forge-mark.svg" alt=""><span>SAFe <span>AGILE FORGE</span></span></a><div class="head-right"><span class="head-chip">PI EVENT PLANNER</span><a class="backlink" href="./">Terug naar startpagina</a></div></header>
+<header><a class="brand" href="./"><img src="./forge-mark.svg" alt=""><span>SAFe <span>AGILE FORGE</span></span></a><div class="head-right"><span class="head-chip">PI EVENT PLANNER · V2.1</span><a class="backlink" href="./">Terug naar startpagina</a></div></header>
 <section class="hero"><div><div class="kicker">THE EVENT OPERATIONS WORKSPACE</div><h1>PI Planning. <span>Goed georganiseerd.</span></h1><p>Van ARTs en teams tot plenaire sessies, breakouts, deelnemers, uitnodigingen en lunch. Richt jouw PI Planning in zonder koppeling met Outlook of interne systemen.</p></div><div class="halo"><div><strong>PI</strong><small>PLANNER</small></div></div></section>
 <div id="wizard" class="wizard panel"><div class="stepheads"><div class="stephead" data-stephead="0"><b>01</b> ARTs & teams</div><div class="stephead" data-stephead="1"><b>02</b> Event & locatie</div><div class="stephead" data-stephead="2"><b>03</b> Organisatie</div></div><div id="wizardContents"></div><div id="wizardError" class="error" role="status"></div><div class="actions"><button type="button" id="prevStep" class="btn">Vorige</button><div class="right"><button type="button" id="nextStep" class="btn primary">Volgende</button></div></div></div>
 <div id="dashboard" class="dashboard">
@@ -64,15 +107,15 @@
 <nav class="tabs" id="tabs" aria-label="PI Planner onderdelen">
 <button data-tab="overview" class="active">Overzicht</button><button data-tab="agenda">Draaiboek</button><button data-tab="rooms">Ruimtes & teams</button><button data-tab="arts">ART-overzicht</button><button data-tab="tasks">Taken & deadlines</button><button data-tab="speakers">Sprekers</button><button data-tab="audit">Controles</button><button data-tab="people">Deelnemers & RSVP</button><button data-tab="catering">Catering</button><button data-tab="invites">Uitnodigingen</button><button data-tab="checklist">Checklist</button><button data-tab="checkin">Check-in</button><button data-tab="feedback">Evaluatie</button>
 </nav>
-<div id="view" class="tabs-content"></div>
+<div id="plannerMessage" role="alert" aria-live="polite"></div><div id="view" class="tabs-content"></div>
 </div>
-<footer class="footer">SAFe AGILE FORGE · A NOVYX FORGE PROJECT · Gegevens blijven in deze browser, tenzij je ze zelf exporteert of deelt. Geen automatische e-mails of centrale RSVP-website.</footer>
+<footer class="footer"><span class="release-label">PI PLANNER V2.1 · </span>SAFe AGILE FORGE · A NOVYX FORGE PROJECT · Gegevens blijven in deze browser, tenzij je ze zelf exporteert of deelt. Geen automatische e-mails of centrale RSVP-website.</footer>
 </div>
 <input id="fileJSON" type="file" accept=".json,application/json" hidden>
 <input id="fileCSV" type="file" accept=".csv,text/csv" hidden>
 <div id="toast" role="status" aria-live="polite"></div>
-<script src="./pi-planner.js"></script>
-<script src="./pi-planner-advanced.js"></script>
-<script src="./pi-planner-export.js"></script>
+<script src="./pi-planner.js?v=20261027-2252-navfix"></script>
+<script src="./pi-planner-advanced.js?v=20261027-2252-navfix"></script>
+<script src="./pi-planner-export.js?v=20261027-2252-navfix"></script>
 </body>
 </html>
