@@ -124,6 +124,7 @@ function renderDashboard(){if(typeof ensureOperations==='function')ensureOperati
  $('dashboardTitle').textContent=state.eventName||'PI Planning';
  $('eventSubheading').textContent=(state.piName||'PI')+' · '+when(state.days[0])+' & '+when(state.days[1]);
  $('metrics').innerHTML=[['ARTs',c.arts],['Teams',c.teams],['Verwacht',c.people],['Aangemeld',c.yes],['Checks gereed',c.done+'/'+state.checks.length],...(typeof operationsMetrics==='function'?[['Open taken',operationsMetrics().due],['Sprekers bevestigd',operationsMetrics().speakers],['Conflictsignalen',scheduleWarnings().length]]:[])].map(a=>'<div class="metric"><b>'+a[1]+'</b><small>'+a[0]+'</small></div>').join('');
+ if(typeof mfSyncPhase==='function')mfSyncPhase(tab);
  document.querySelectorAll('[data-tab]').forEach(b=>{
   const active=b.dataset.tab===tab;
   b.classList.toggle('active',active);
