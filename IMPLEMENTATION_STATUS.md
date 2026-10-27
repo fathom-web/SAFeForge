@@ -42,7 +42,7 @@
 | U02–U08 | Beginner/expert toggle affects glossary preference; not every form has a contextual wizard or automatic next action |
 | U10–U16 | Demo dataset, cross-module search, advanced accessibility/mobile testing, fully localized English interface |
 | T01–T03 | Shared ART metadata is imported locally, not centrally synchronized; project archive/clone feature still absent |
-| T07–T10 | Privacy impact review, CI test suite, profile-specific versioning, comprehensive copyright/legal review |
+| T07–T10 | Privacy impact review, verification of GitHub CI runs, profile-specific versioning, comprehensive copyright/legal review |
 
 ## Not achievable securely on the current static-only hosting without new infrastructure
 
@@ -60,6 +60,7 @@
 - [x] The Ceremony Planner generates a PDF and an XLSX-compatible workbook.
 - [ ] Real browser acceptance test: current Chrome/Edge/Safari, Windows/macOS/iOS/Android.
 - [ ] Verify data retention/import after migration and refresh on live DirectAdmin hosting.
+- [x] Regression test suite and GitHub Actions workflow committed (`tests/smoke.mjs`); first GitHub CI execution not independently verified.
 - [ ] Accessibility and keyboard-screen-reader testing.
 - [ ] Get SAFe content signoff from experienced RTE/PM/BO/System Architect.
 - [ ] Security/privacy and organizational approval before using real personnel or operational information.
